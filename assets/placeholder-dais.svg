@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 450" width="1050" height="450" role="img"
+     aria-label="Placeholder illustration: the dais, lectern and presentation wall">
+  <rect width="1050" height="450" fill="#0d1b3e"/>
+  <g fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round">
+    <!-- back wall panelling -->
+    <g opacity="0.16" stroke-width="1.2">
+      <path d="M120 150 V370 M240 150 V370 M810 150 V370 M930 150 V370"/>
+      <path d="M60 150 H990 M60 370 H990"/>
+    </g>
+    <!-- presentation surface -->
+    <g opacity="0.34" stroke-width="1.8">
+      <path d="M400 166 H700 V310 H400 Z"/>
+      <path d="M424 196 H600 M424 224 H660 M424 252 H560 M424 280 H630" opacity="0.7"/>
+    </g>
+    <!-- dais platform, drawn in perspective -->
+    <g opacity="0.44" stroke-width="1.8">
+      <path d="M300 370 H790 L830 410 H262 Z"/>
+      <path d="M262 410 V430 H830 V410"/>
+    </g>
+    <!-- lectern -->
+    <g opacity="0.5" stroke-width="1.8">
+      <path d="M470 370 V300 M470 300 H560 L570 316 H480 Z"/>
+      <path d="M500 370 V330 M530 370 V330 M488 370 H544"/>
+    </g>
+    <!-- two chairs on the dais -->
+    <g opacity="0.34" stroke-width="1.6">
+      <path d="M640 370 V326 h44 V370 M640 348 h44 M646 370 V386 M678 370 V386"/>
+      <path d="M710 370 V326 h44 V370 M710 348 h44 M716 370 V386 M748 370 V386"/>
+    </g>
+    <!-- standing mic -->
+    <g opacity="0.36" stroke-width="1.6">
+      <path d="M370 370 V276"/><ellipse cx="370" cy="266" rx="9" ry="13"/>
+      <path d="M352 370 h36"/>
+    </g>
+    <!-- ceiling lights -->
+    <g opacity="0.26" stroke-width="1.4">
+      <path d="M330 60 V96"/><circle cx="330" cy="108" r="13"/>
+      <path d="M550 60 V84"/><circle cx="550" cy="96" r="10"/>
+      <path d="M770 60 V96"/><circle cx="770" cy="108" r="13"/>
+    </g>
+  </g>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <text x="34" y="52" fill="#ead282" font-size="13" letter-spacing="2.4">PLACEHOLDER 2 OF 3</text>
+    <text x="34" y="80" fill="#ffffff" font-size="23" font-weight="600">Dais, lectern and screen wall</text>
+    <text x="34" y="106" fill="#8fa0c0" font-size="14">Shows what a presenter faces. Replace with a real photograph.</text>
+  </g>
+</svg>
