@@ -126,7 +126,16 @@
       background: #ffffff; border-color: rgba(255,255,255,0.42); padding: 5px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.22);
     }
-    @media (max-width: 720px) { .mark { width: 52px; height: 52px; } }
+    /* A horizontal lockup (e.g. 291x73) must not be crushed into the square mark —
+       applyLogo() measures the file and switches the slot to a wide plate. */
+    .mark.wide {
+      width: auto; height: 54px; max-width: 210px; padding: 5px 10px; border-radius: 8px;
+    }
+    .mark.wide img { width: auto; height: 100%; max-width: 190px; }
+    @media (max-width: 720px) {
+      .mark { width: 52px; height: 52px; }
+      .mark.wide { width: auto; height: 44px; max-width: 150px; }
+    }
     .mark.has-logo #brandMono { display: none; }
     .brand-name { font-weight: 700; line-height: 1.05; }
     .brand-sub {
@@ -541,10 +550,12 @@
       padding: 22px 26px 18px; border-bottom: 3px solid var(--navy);
     }
     .letterhead-logo {
-      width: 92px; height: 92px; display: grid; place-items: center;
-      border: 1px solid var(--line); border-radius: 8px; padding: 6px; background: #fff;
+      min-width: 92px; height: 92px; display: grid; place-items: center;
+      border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: #fff;
     }
-    .letterhead-logo img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+    /* wide lockups get room instead of being squeezed into a square */
+    .letterhead-logo.wide { min-width: 0; max-width: 260px; }
+    .letterhead-logo img { max-width: 240px; max-height: 100%; object-fit: contain; display: block; }
     .letterhead-logo .fallback {
       font-family: "Cormorant Garamond", serif; font-size: 30px; font-weight: 600; color: var(--navy);
     }
@@ -1022,7 +1033,7 @@
     <span class="heart">&#10084;</span>
     <span>~rhc</span>
     <span class="sep">·</span>
-    <span>Project Clinic, KLE-C-SHInE</span>
+    <span>EE Lab, KLE-C-SHInE</span>
     <span class="sep">·</span>
     <span>Last updated <span id="footerUpdated">--</span></span>
   </footer>
@@ -1351,11 +1362,19 @@
         img = document.createElement("img");
         img.id = "brandLogo";
         img.alt = "KLE Technological University";
-        img.onload = () => mark.classList.add("has-logo");
-        img.onerror = () => { img.remove(); mark.classList.remove("has-logo"); };
+        img.onerror = () => { img.remove(); mark.classList.remove("has-logo", "wide"); };
         mark.insertBefore(img, mark.firstChild);
       }
+      /* fit the slot to the artwork, not the other way round */
+      const shapeToLogo = () => {
+        mark.classList.add("has-logo");
+        const ratio = img.naturalWidth / Math.max(1, img.naturalHeight);
+        mark.classList.toggle("wide", ratio > 1.6);
+        state.logoRatio = ratio;
+      };
+      img.onload = shapeToLogo;
       if (img.getAttribute("src") !== clean) img.setAttribute("src", clean);
+      if (img.complete && img.naturalWidth) shapeToLogo();       // already cached
       state.logoUrl = clean;
     }
 
@@ -2304,7 +2323,7 @@
       $("#pdfReport").innerHTML =
         /* ---- letterhead ---- */
         '<div class="letterhead">' +
-          '<div class="letterhead-logo">' +
+          '<div class="letterhead-logo' + (state.logoRatio > 1.6 ? " wide" : "") + '">' +
             (state.logoUrl
               ? '<img src="' + esc(state.logoUrl) + '" alt="Institution logo" />'
               : '<span class="fallback">OSH</span>') +
