@@ -381,6 +381,8 @@
     .otp-row .field { flex: 1; }
     .otp-code { letter-spacing: 6px; font-family: "JetBrains Mono", monospace; text-align: center; }
     .verified { border-color: var(--green) !important; background: #eef7f1 !important; }
+    .hidden-field { display: none; }
+    .hidden-field.show { display: block; animation: riseIn 0.25s ease both; }
     .hintline { color: var(--muted); font-size: 12px; font-weight: 400; letter-spacing: 0; text-transform: none; }
     .hintline.err { color: var(--red); font-weight: 600; }
     .hintline.good { color: var(--green); font-weight: 600; }
@@ -540,6 +542,20 @@
     }
     .rule-card ul { margin: 0; padding: 12px 14px 14px 30px; color: var(--muted); font-size: 13px; line-height: 1.65; }
     .rule-card li b { color: var(--ink); }
+    /* sustainability card: the hall's power bill is a shared cost */
+    .rule-card.green { border-color: rgba(31,122,77,0.4); }
+    .rule-card.green h3 {
+      background: #edf7f0; color: #14532d; border-bottom-color: rgba(31,122,77,0.28);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .rule-card.green ul li::marker { color: var(--green); }
+    .leaf { width: 17px; height: 17px; flex: none; color: var(--green); }
+    .leaf-note {
+      display: flex; align-items: flex-start; gap: 10px; margin: 0 18px 18px;
+      border: 1px solid rgba(31,122,77,0.35); border-left-width: 4px; border-radius: 8px;
+      background: #f2f9f4; padding: 12px 14px; color: #14532d; font-size: 13px; line-height: 1.55;
+    }
+    .leaf-note b { color: #0f3d21; }
 
     /* ---------- printable report (institutional format) ---------- */
     .pdf-report { margin: 18px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: white; }
@@ -818,6 +834,8 @@
           </label>
           <label class="span3">Department
             <select class="field" name="dept" id="deptSelect" required></select>
+            <input class="field hidden-field" name="deptDetail" id="deptDetail" maxlength="80"
+                   placeholder="Which department? Please type it" />
           </label>
 
           <label class="span3">Mobile number
@@ -863,13 +881,30 @@
           </label>
 
           <div class="span6">
-            <label style="gap:8px">Support required
+            <label style="gap:8px">Assistance required
+              <span class="hintline">The hall's projector, screen and audio system are already in place and the
+                seating is fixed — tell us only whether someone needs to help on the day.</span>
               <div class="radio-wrap" id="supportWrap"></div>
+              <input class="field hidden-field" name="supportDetail" id="supportDetail" maxlength="120"
+                     placeholder="Tell us what you need, so the caretaker can arrange it" />
+            </label>
+          </div>
+
+          <div class="span6" id="acWrap" style="display:none">
+            <label style="gap:8px">Air conditioning
+              <span class="hintline">Someone has to switch it on ahead of time, and it draws real power —
+                so please answer for the day you are booking, not out of habit.</span>
+              <div class="radio-wrap" id="acChoices">
+                <label class="radio-chip"><input type="radio" name="ac" value="Yes" /> Yes, please cool the hall</label>
+                <label class="radio-chip"><input type="radio" name="ac" value="No" /> No, not required</label>
+              </div>
             </label>
           </div>
 
           <div class="span6" id="slotPreview"></div>
         </div>
+
+        <div class="leaf-note" id="greenNote"></div>
 
         <div class="form-actions">
           <button class="primary" type="submit" id="submitBtn" disabled>Verify email to submit</button>
@@ -1286,6 +1321,11 @@
         n.innerHTML = "<b>Notice.</b> " + esc(c.notice);
       }
 
+      $("#greenNote").innerHTML = leafSvg() +
+        "<div><b>Please switch everything off before you leave</b> — air conditioning, projector, audio, " +
+        "lights and fans — and let the caretaker know the hall is free. " +
+        "The power bill and the next meeting are both shared.</div>";
+
       renderLive();
       renderGallery();
       renderPublicKpis();
@@ -1545,6 +1585,12 @@
         '<label class="radio-chip"><input type="radio" name="support" value="' + esc(o) + '"' +
         (i === 0 ? " checked" : "") + " /> " + esc(o) + "</label>").join("");
 
+      /* the AC question is switched on by ASK_AC in the Config sheet */
+      $("#acWrap").style.display = c.askAc ? "block" : "none";
+      $$("#acChoices input").forEach((r) => { r.required = !!c.askAc; });
+
+      syncOtherFields();
+
       const dateEl = $("#dateInput");
       dateEl.min = c.today;
       dateEl.max = shiftIso(c.today, c.maxAdvanceDays);
@@ -1564,6 +1610,26 @@
       $("#availDate").min = c.today;
       $("#availDate").max = shiftIso(c.today, c.maxAdvanceDays);
       $("#availDate").value = state.availability ? state.availability.date : c.today;
+    }
+
+    /**
+     * "Others" on its own tells the caretaker nothing, so picking it opens a box for
+     * the real answer and makes it required. The server enforces the same rule.
+     */
+    const isOther = (v) => /^others?\b/i.test(String(v || ""));
+
+    function syncOtherFields() {
+      const pairs = [
+        [isOther($("#deptSelect").value), "#deptDetail"],
+        [isOther((document.querySelector("[name=support]:checked") || {}).value), "#supportDetail"]
+      ];
+      pairs.forEach(([needed, sel]) => {
+        const el = $(sel);
+        if (!el) return;
+        el.classList.toggle("show", needed);
+        el.required = needed;
+        if (!needed) el.value = "";
+      });
     }
 
     function duration() {
@@ -1792,7 +1858,9 @@
         name: fd.get("name"), email: state.bookEmail, phone: fd.get("phone"),
         dept: fd.get("dept"), purpose: fd.get("purpose"), attendees: fd.get("attendees"),
         support: fd.get("support"), date: fd.get("date"),
-        startTime: fd.get("startTime"), endTime: fd.get("endTime")
+        startTime: fd.get("startTime"), endTime: fd.get("endTime"),
+        deptDetail: fd.get("deptDetail") || "", supportDetail: fd.get("supportDetail") || "",
+        ac: fd.get("ac") || ""
       };
 
       const btn = $("#submitBtn");
@@ -1803,6 +1871,7 @@
         toast("Booking recorded", res.message, "success");
         showDetail("Booking " + res.booking.id, res.booking);
         form.reset();
+        syncOtherFields();
         resetVerification();
         $("#durationBadge").textContent = "Duration · 0h 00m";
         await refreshAll();
@@ -1821,6 +1890,8 @@
         ["Reference", b.id], ["Status", b.status], ["Date", b.datePretty || b.date],
         ["Time", b.start + " – " + b.end], ["Name", b.name], ["Department", b.dept],
         ["Purpose", b.purpose], ["Attendees", b.attendees], ["Support", b.support],
+        ["Other details", b.details],
+        ["Air conditioning", b.ac ? (b.ac === "Yes" ? "Yes — to be switched on" : "Not required") : ""],
         ["Email", b.email], ["Phone", b.phone], ["Remarks", b.remarks],
         ["Requested", b.createdAt], ["Last update", b.updatedAt ? b.updatedAt + (b.updatedBy ? " by " + b.updatedBy : "") : ""]
       ].filter((r) => r[1] !== undefined && r[1] !== "" && r[1] !== null);
@@ -1873,10 +1944,20 @@
     }
 
     /* ============================= guidelines ============================= */
+
+    /** Inline leaf, so the green notes need no image hosting. */
+    const leafSvg = (cls) =>
+      '<svg class="' + (cls || "leaf") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>' +
+      '<path d="M2 21c0-3 1.85-5.36 2.99-6.99"/></svg>';
+
     function renderRules() {
       const c = state.config;
       const card = (title, items) => '<div class="rule-card"><h3>' + esc(title) + "</h3><ul>" +
         items.map((i) => "<li>" + i + "</li>").join("") + "</ul></div>";
+      const greenCard = (title, items) => '<div class="rule-card green"><h3>' + leafSvg() + "<span>" +
+        esc(title) + "</span></h3><ul>" + items.map((i) => "<li>" + i + "</li>").join("") + "</ul></div>";
 
       const closed = c.closedWeekdays.length ? c.closedWeekdays.join(", ") : "none";
       $("#rulesWrap").innerHTML =
@@ -1908,6 +1989,13 @@
           "Past meetings cannot be cancelled — contact the caretaker",
           "The caretaker is notified automatically on every booking and cancellation",
           "No-shows are recorded by the administrator and are visible in the KPIs"
+        ]) +
+        greenCard("Before you leave — go green", [
+          "<b>Switch off the air conditioning</b> as you finish, not as you walk out — the hall holds its temperature",
+          "<b>Power down the projector, screen and audio system</b>, and switch off the lights and fans",
+          "<b>Notify the caretaker</b> that the hall is free, so the next meeting is not kept waiting and the room can be closed up",
+          "Leave the seating as you found it and take your papers, cups and cables with you",
+          "Cancel a slot you no longer need — an empty booked hall is the most wasteful outcome of all"
         ]);
     }
 
@@ -2107,6 +2195,8 @@
           esc(b.start + "–" + b.end) + attendanceNote(b) + "</td><td>" + esc(b.name) +
           "<br><span class='hintline'>" + esc(b.email) + " · " + esc(b.phone) + "</span></td><td>" + esc(b.dept) +
           "</td><td>" + esc(b.purpose) +
+          (b.ac === "Yes" ? "<br><span class='hintline' style='color:var(--blue);font-weight:600'>AC requested</span>" : "") +
+          (b.details ? "<br><span class='hintline good'>" + esc(b.details) + "</span>" : "") +
           (b.remarks ? "<br><span class='hintline'>" + esc(b.remarks) + "</span>" : "") +
           "</td><td>" + esc(b.support) + "</td><td>" + statusPill(b.status) + "</td><td><div class='row-actions'>" +
           buttons.join("") + "</div></td></tr>";
@@ -2373,7 +2463,8 @@
             ["Average duration", k.avgDuration + " min", "Average attendees", k.avgAttendees],
             ["Seat utilisation", k.seatUtilisation + "%", "Average lead time", k.avgLeadDays + " days"],
             ["Busiest hour", k.peakSlot, "Departments served", k.departments],
-            ["Cancellations", k.cancelled + " (" + k.cancelRate + "%)", "No-shows", k.noShow]
+            ["Cancellations", k.cancelled + " (" + k.cancelRate + "%)", "No-shows", k.noShow],
+            ["AC requested", k.acRequested + " (" + k.acShare + "%)", "Meetings held", k.heldSoFar]
           ],
           "Capacity assumes the operating hours above, excluding closed days and every listed holiday. " +
           "The " + c.buffer + " minute changeover gap is reserved around each meeting and is not counted as booked time.")) +
@@ -2569,6 +2660,9 @@
           r.level === "good" ? "success" : r.level === "err" ? "error" : "info");
       });
     });
+
+    on("#deptSelect", "change", syncOtherFields);
+    on("#supportWrap", "change", syncOtherFields);
 
     ["startTime", "endTime"].forEach((id) => $("#" + id).addEventListener("change", refreshDuration));
     $("#dateInput").addEventListener("change", () => {
