@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 450" width="1050" height="450" role="img"
+     aria-label="Placeholder schematic: boardroom seating plan for twenty attendees">
+  <rect width="1050" height="450" fill="#0d1b3e"/>
+  <g fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round">
+    <!-- room outline -->
+    <g opacity="0.3" stroke-width="1.8">
+      <path d="M180 148 H880 V416 H180 Z"/>
+    </g>
+    <!-- door swing, bottom left -->
+    <g opacity="0.34" stroke-width="1.6">
+      <path d="M180 380 V416 M180 380 a36 36 0 0 0 36 36"/>
+    </g>
+    <!-- screen wall, top -->
+    <g opacity="0.42" stroke-width="3"><path d="M450 148 H610"/></g>
+    <!-- table -->
+    <g opacity="0.42" stroke-width="1.8">
+      <rect x="330" y="212" width="400" height="140" rx="14"/>
+    </g>
+    <!-- 20 chairs: 7 top, 7 bottom, 3 each end -->
+    <g opacity="0.5" stroke-width="1.5">
+      <circle cx="360" cy="188" r="12"/><circle cx="412" cy="188" r="12"/><circle cx="464" cy="188" r="12"/>
+      <circle cx="516" cy="188" r="12"/><circle cx="568" cy="188" r="12"/><circle cx="620" cy="188" r="12"/>
+      <circle cx="672" cy="188" r="12"/>
+      <circle cx="360" cy="376" r="12"/><circle cx="412" cy="376" r="12"/><circle cx="464" cy="376" r="12"/>
+      <circle cx="516" cy="376" r="12"/><circle cx="568" cy="376" r="12"/><circle cx="620" cy="376" r="12"/>
+      <circle cx="672" cy="376" r="12"/>
+      <circle cx="298" cy="242" r="12"/><circle cx="298" cy="282" r="12"/><circle cx="298" cy="322" r="12"/>
+      <circle cx="762" cy="242" r="12"/><circle cx="762" cy="282" r="12"/><circle cx="762" cy="322" r="12"/>
+    </g>
+    <!-- dimension hints -->
+    <g opacity="0.2" stroke-width="1.1">
+      <path d="M180 128 H880 M180 122 V134 M880 122 V134"/>
+      <path d="M900 148 V416 M894 148 H906 M894 416 H906"/>
+    </g>
+  </g>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <text x="34" y="52" fill="#ead282" font-size="13" letter-spacing="2.4">PLACEHOLDER 3 OF 3</text>
+    <text x="34" y="80" fill="#ffffff" font-size="23" font-weight="600">Seating schematic &#183; 20 places</text>
+    <text x="34" y="106" fill="#8fa0c0" font-size="14">Indicative only &#8212; redraw to match the real arrangement.</text>
+    <text x="924" y="286" fill="#8fa0c0" font-size="12" text-anchor="middle" transform="rotate(90 924 286)">room depth</text>
+    <text x="530" y="118" fill="#8fa0c0" font-size="12" text-anchor="middle">room width</text>
+    <text x="530" y="172" fill="#ead282" font-size="12" text-anchor="middle">screen / presentation wall</text>
+    <text x="222" y="440" fill="#8fa0c0" font-size="12">entrance</text>
+  </g>
+</svg>
