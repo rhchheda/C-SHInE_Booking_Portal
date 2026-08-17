@@ -113,17 +113,20 @@
       max-width: 1240px; margin: 0 auto; padding: 11px 18px;
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
-    .brand { display: flex; align-items: center; gap: 12px; min-width: 200px; }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 210px; }
+    .brand-name { font-size: 17px; }
     .mark {
-      width: 40px; height: 40px; border: 1px solid rgba(201,168,76,0.7);
+      width: 62px; height: 62px; border: 1px solid rgba(201,168,76,0.7);
       display: grid; place-items: center; color: var(--gold-2);
-      font-family: "Cormorant Garamond", serif; font-size: 20px; font-weight: 600;
-      border-radius: 8px; overflow: hidden; flex: none;
+      font-family: "Cormorant Garamond", serif; font-size: 26px; font-weight: 600;
+      border-radius: 9px; overflow: hidden; flex: none;
     }
     .mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
     .mark.has-logo {
-      background: #ffffff; border-color: rgba(255,255,255,0.34); padding: 3px;
+      background: #ffffff; border-color: rgba(255,255,255,0.42); padding: 5px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.22);
     }
+    @media (max-width: 720px) { .mark { width: 52px; height: 52px; } }
     .mark.has-logo #brandMono { display: none; }
     .brand-name { font-weight: 700; line-height: 1.05; }
     .brand-sub {
@@ -231,9 +234,11 @@
     }
     .gallery-nav { display: flex; gap: 6px; }
     .gallery-nav button { min-width: 38px; font-size: 15px; line-height: 1; }
+    /* Deliberately no `scroll-behavior: smooth` here — goSlide() asks for smooth
+       per call and falls back to an instant jump if the animation never runs. */
     .gallery {
       display: flex; gap: 0; overflow-x: auto; scroll-snap-type: x mandatory;
-      scroll-behavior: smooth; scrollbar-width: none; background: var(--navy);
+      scrollbar-width: none; background: var(--navy);
     }
     .gallery::-webkit-scrollbar { display: none; }
     .gallery:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
@@ -527,26 +532,61 @@
     .rule-card ul { margin: 0; padding: 12px 14px 14px 30px; color: var(--muted); font-size: 13px; line-height: 1.65; }
     .rule-card li b { color: var(--ink); }
 
-    /* ---------- printable report ---------- */
+    /* ---------- printable report (institutional format) ---------- */
     .pdf-report { margin: 18px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: white; }
-    .pdf-cover {
-      min-height: 210px; padding: 26px; color: white;
-      background: linear-gradient(120deg, var(--navy) 0%, var(--navy-2) 60%, #22406f 100%);
-      display: grid; align-content: space-between; gap: 24px;
+
+    /* letterhead: ink-friendly, logo left, document title right */
+    .letterhead {
+      display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center;
+      padding: 22px 26px 18px; border-bottom: 3px solid var(--navy);
     }
-    .report-logos { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .letterhead-logo {
+      width: 92px; height: 92px; display: grid; place-items: center;
+      border: 1px solid var(--line); border-radius: 8px; padding: 6px; background: #fff;
+    }
+    .letterhead-logo img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+    .letterhead-logo .fallback {
+      font-family: "Cormorant Garamond", serif; font-size: 30px; font-weight: 600; color: var(--navy);
+    }
+    .letterhead-inst {
+      font-size: 19px; font-weight: 800; color: var(--navy); letter-spacing: 0.01em; line-height: 1.25;
+    }
+    .letterhead-unit {
+      color: var(--muted); font-size: 12.5px; margin-top: 3px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .letterhead-title {
+      margin-top: 10px; font-family: "Cormorant Garamond", serif;
+      font-size: 27px; line-height: 1.1; color: var(--ink);
+    }
+    .letterhead-title em { font-style: italic; color: #8a6c1f; }
+    .doc-control { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    .doc-control th, .doc-control td { border: 1px solid #dfe5ee; padding: 6px 9px; text-align: left; }
+    .doc-control th {
+      background: #f3f6fa; color: var(--muted); font-weight: 700; width: 15%;
+      text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px;
+    }
+    .exec-summary {
+      border-left: 4px solid var(--gold); background: #fffdf6;
+      padding: 14px 16px; font-size: 13px; line-height: 1.65; color: var(--ink);
+    }
+    .exec-summary b { color: var(--navy); }
+    .signature-block {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px;
+      padding: 34px 26px 26px; break-inside: avoid;
+    }
+    .sign-slot { border-top: 1px solid var(--ink); padding-top: 7px; font-size: 11.5px; color: var(--muted); }
+    .sign-slot b { display: block; color: var(--ink); font-size: 12.5px; margin-bottom: 2px; }
+    .report-end {
+      text-align: center; color: var(--muted); font-size: 10.5px;
+      letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 26px 22px;
+    }
+    .report-logos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
     .report-logo {
-      min-height: 44px; border: 1px solid rgba(234,210,130,0.58); border-radius: 8px;
-      display: grid; place-items: center; padding: 8px 12px;
-      background: rgba(255,255,255,0.12); color: var(--gold-2);
-      font-weight: 800; letter-spacing: 0.06em; font-size: 12px;
+      border: 1px solid var(--line); border-radius: 5px; padding: 4px 9px;
+      background: #f7f9fb; color: var(--navy); font-weight: 700;
+      letter-spacing: 0.05em; font-size: 10px;
     }
-    .report-cover-title {
-      font-family: "Cormorant Garamond", serif; font-size: clamp(30px, 4.4vw, 50px);
-      line-height: 1; max-width: 720px;
-    }
-    .report-cover-title em { color: var(--gold-2); font-style: italic; }
-    .report-cover-sub { margin-top: 10px; max-width: 720px; color: rgba(255,255,255,0.72); line-height: 1.55; font-size: 13.5px; }
     .report-kpis {
       display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
       padding: 18px; background: #f7f9fb; border-bottom: 1px solid var(--line);
@@ -557,11 +597,16 @@
     .report-kpi:nth-child(4) { background: var(--violet); }
     .report-kpi-label { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.75); }
     .report-kpi-value { margin-top: 7px; font-family: "Cormorant Garamond", serif; font-size: 34px; line-height: 1; }
-    .report-section { padding: 18px; break-inside: avoid; }
+    .report-section { padding: 16px 26px; break-inside: avoid; }
     .report-section-title {
-      color: var(--navy); font-size: 16px; font-weight: 800; margin-bottom: 10px;
+      color: var(--navy); font-size: 15px; font-weight: 800; margin-bottom: 10px;
       padding-bottom: 7px; border-bottom: 2px solid var(--gold);
+      display: flex; align-items: baseline; gap: 9px;
     }
+    .report-section-title .num {
+      font-family: "JetBrains Mono", monospace; font-size: 12px; color: #8a6c1f;
+    }
+    .report-section-note { break-before: page; }
     .report-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
     .report-table th { background: var(--navy); color: white; }
     .report-table th, .report-table td { border: 1px solid #dfe5ee; padding: 7px 8px; vertical-align: top; }
@@ -596,10 +641,14 @@
       .panel:not(#report), #report .panel-head, #report .toolbar { display: none !important; }
       main { max-width: none; padding: 0; }
       #report, .pdf-report { display: block !important; border: 0; box-shadow: none; margin: 0; }
-      .pdf-cover, .report-kpis, .report-kpi, .report-table th {
+      .report-kpis, .report-kpi, .report-table th, .letterhead, .exec-summary, .doc-control th {
         print-color-adjust: exact; -webkit-print-color-adjust: exact;
       }
-      @page { size: A4 portrait; margin: 12mm; }
+      /* repeat table headings across page breaks and never split a row */
+      .report-table thead { display: table-header-group; }
+      .report-table tr { break-inside: avoid; }
+      .letterhead, .signature-block { break-inside: avoid; }
+      @page { size: A4 portrait; margin: 14mm 12mm; }
     }
 
     @media (max-width: 1040px) {
@@ -665,10 +714,11 @@
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand">
-        <!-- KLE logo, top-left. Drop the official file at assets/kle-logo.png, or set
-             LOGO_URL in the Config sheet to any https image. Falls back to the monogram. -->
+        <!-- KLE logo, top-left. Reads assets/KLE_Logo.png; override with LOGO_URL in the
+             Config sheet. Falls back to the monogram if it will not load. NOTE: GitHub
+             Pages is case-sensitive, so this must match the committed filename exactly. -->
         <div class="mark" id="brandMark">
-          <img id="brandLogo" src="assets/kle-logo.png" alt="KLE Technological University"
+          <img id="brandLogo" src="assets/KLE_Logo.png" alt="KLE Technological University"
                onload="document.getElementById('brandMark').classList.add('has-logo')"
                onerror="this.remove()" />
           <span id="brandMono">OSH</span>
@@ -972,7 +1022,7 @@
     <span class="heart">&#10084;</span>
     <span>~rhc</span>
     <span class="sep">·</span>
-    <span>EE Lab, KLE-C-SHInE</span>
+    <span>Project Clinic, KLE-C-SHInE</span>
     <span class="sep">·</span>
     <span>Last updated <span id="footerUpdated">--</span></span>
   </footer>
@@ -987,7 +1037,7 @@
       </div>
       <div class="modal-body">
         <p id="promptBody"></p>
-        <label id="promptFieldWrap">Note
+        <label id="promptFieldWrap"><span id="promptFieldLabel">Note</span>
           <input class="field" id="promptField" maxlength="180" />
         </label>
       </div>
@@ -1106,20 +1156,60 @@
       setTimeout(() => el.remove(), type === "error" ? 7000 : 4600);
     }
 
-    function ask(title, body, withNote, okLabel) {
+    /**
+     * Confirmation prompt, resolved by whichever signal the browser actually gives
+     * us: the button click, the form submit, or the dialog's close/cancel events.
+     * Some embedded webviews never fire `close`, and depending on it alone left the
+     * promise hanging — the operator's click would silently do nothing.
+     */
+    function ask(title, body, withNote, okLabel, prefill, fieldLabel) {
       return new Promise((resolve) => {
+        const dlg = $("#promptDialog");
+        const form = $("#promptForm");
+        const okBtn = $("#promptOk");
+        const cancels = $$("#promptDialog [value='cancel']");
+
         $("#promptTitle").textContent = title;
         $("#promptBody").textContent = body;
         $("#promptFieldWrap").style.display = withNote ? "grid" : "none";
-        $("#promptField").value = "";
-        $("#promptOk").textContent = okLabel || "Continue";
-        const dlg = $("#promptDialog");
-        const done = (evt) => {
-          dlg.removeEventListener("close", done);
-          resolve(dlg.returnValue === "ok" ? { ok: true, note: $("#promptField").value } : { ok: false });
+        $("#promptFieldLabel").textContent = fieldLabel || "Note";
+        $("#promptField").value = prefill === undefined || prefill === null ? "" : String(prefill);
+        okBtn.textContent = okLabel || "Continue";
+        if (withNote) setTimeout(() => { $("#promptField").focus(); $("#promptField").select(); }, 60);
+
+        let settled = false;
+        const cleanup = () => {
+          form.removeEventListener("submit", onSubmit);
+          dlg.removeEventListener("close", onClose);
+          dlg.removeEventListener("cancel", onCancel);
+          okBtn.removeEventListener("click", onOk);
+          cancels.forEach((b) => b.removeEventListener("click", onNo));
         };
-        dlg.addEventListener("close", done);
-        dlg.showModal();
+        const finish = (confirmed) => {
+          if (settled) return;
+          settled = true;
+          const note = $("#promptField").value;
+          cleanup();
+          if (dlg.open) { try { dlg.close(); } catch (e) { dlg.removeAttribute("open"); } }
+          resolve(confirmed ? { ok: true, note: note } : { ok: false });
+        };
+        function onSubmit(evt) {
+          const value = (evt.submitter && evt.submitter.value) || dlg.returnValue;
+          finish(value === "ok");
+        }
+        function onClose() { finish(dlg.returnValue === "ok"); }
+        function onCancel() { finish(false); }
+        function onOk() { finish(true); }
+        function onNo() { finish(false); }
+
+        form.addEventListener("submit", onSubmit);
+        dlg.addEventListener("close", onClose);
+        dlg.addEventListener("cancel", onCancel);
+        okBtn.addEventListener("click", onOk);
+        cancels.forEach((b) => b.addEventListener("click", onNo));
+
+        if (typeof dlg.showModal === "function") dlg.showModal();
+        else dlg.setAttribute("open", "");
       });
     }
 
@@ -1395,8 +1485,20 @@
       if (!slides.length) return;
       gallery.index = (i + slides.length) % slides.length;
       const track = $("#galleryTrack");
-      track.scrollTo({ left: slides[gallery.index].offsetLeft - track.offsetLeft,
-        behavior: smooth === false ? "auto" : "smooth" });
+      const target = slides[gallery.index].offsetLeft - track.offsetLeft;
+      const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const animate = smooth !== false && !still;
+
+      track.scrollTo({ left: target, behavior: animate ? "smooth" : "auto" });
+      /* Smooth scrolling needs animation frames. Backgrounded tabs, reduced-motion
+         shims and embedded viewers may never run them, so confirm the landing and
+         jump outright if the animation went nowhere. */
+      if (animate) {
+        clearTimeout(gallery.landing);
+        gallery.landing = setTimeout(() => {
+          if (Math.abs(track.scrollLeft - target) > 4) track.scrollLeft = target;
+        }, 420);
+      }
       updateGalleryMeta();
     }
 
@@ -1879,7 +1981,17 @@
         kpiCard("Peak slot", k.peakSlot, "busiest hour this month", "var(--violet)"),
         kpiCard("Departments", k.departments, "top: " + k.topDept + " (" + k.topDeptCount + ")", "var(--gold)"),
         kpiCard("Avg lead time", k.avgLeadDays, "days between request and meeting", "var(--muted)", "d"),
-        kpiCard("All time", k.totalAllTime, "rows in the register", "var(--navy)")
+        kpiCard("All time", k.totalAllTime, "rows in the register", "var(--navy)"),
+        /* attendance, confirmed by the admin */
+        kpiCard("Attendance logged", k.attendanceCover, k.attendanceLogged + " of " + k.heldSoFar + " meetings held",
+          k.unrecorded ? "var(--amber)" : "var(--green)", "%"),
+        kpiCard("Actual hours", k.actualHours, "measured in the room, not booked", "var(--blue)", "h"),
+        /* a negative gap means the room was occupied beyond the booking */
+        (k.bookedVsActual >= 0
+          ? kpiCard("Booked not used", k.bookedVsActual, "hours reserved but not occupied", "var(--rose)", "h")
+          : kpiCard("Over-stay", Math.abs(k.bookedVsActual), "hours used beyond the booking", "var(--violet)", "h")),
+        kpiCard("Late starts", k.lateStartRate, "avg " + k.avgLateStart + " min after the booked time", "var(--amber)", "%"),
+        kpiCard("Overruns", k.overrunCount, k.avgOverrun ? "avg " + k.avgOverrun + " min past the end" : "none past the end", "var(--violet)")
       ].join("");
 
       renderAdminCharts(d.charts);
@@ -1954,20 +2066,45 @@
       const act = (id, status, label, cls) =>
         '<button class="ghost ' + (cls || "") + '" data-status="' + esc(status) + '" data-id="' + esc(id) + '">' + label + "</button>";
 
+      const today = state.admin.config.today;
       $("#adminRows").innerHTML = rows.length ? rows.map((b) => {
         const s = norm(b.status);
+        const held = b.date <= today && s !== "cancelled";
         const buttons = [];
         if (s === "pending") buttons.push(act(b.id, "Confirmed", "Approve"));
         if (s === "pending" || s === "confirmed") buttons.push(act(b.id, "Cancelled", "Cancel", "danger"));
-        if (s === "confirmed") { buttons.push(act(b.id, "Completed", "Completed")); buttons.push(act(b.id, "No-show", "No-show")); }
+        if (held) {
+          buttons.push('<button class="ghost" data-att="in" data-id="' + esc(b.id) + '">' +
+            (b.arrivedAt ? "In " + esc(b.arrivedAt) : "Mark in") + "</button>");
+          if (b.arrivedAt) {
+            buttons.push('<button class="ghost" data-att="out" data-id="' + esc(b.id) + '">' +
+              (b.leftAt ? "Out " + esc(b.leftAt) : "Mark out") + "</button>");
+          } else {
+            buttons.push(act(b.id, "No-show", "No-show"));
+          }
+        }
         buttons.push('<button class="ghost" data-detail="' + esc(b.id) + '">Details</button>');
         return "<tr><td class='mono'>" + esc(b.id) + "</td><td>" + esc(b.datePretty) + "</td><td class='mono'>" +
-          esc(b.start + "–" + b.end) + "</td><td>" + esc(b.name) + "<br><span class='hintline'>" + esc(b.email) +
-          " · " + esc(b.phone) + "</span></td><td>" + esc(b.dept) + "</td><td>" + esc(b.purpose) +
+          esc(b.start + "–" + b.end) + attendanceNote(b) + "</td><td>" + esc(b.name) +
+          "<br><span class='hintline'>" + esc(b.email) + " · " + esc(b.phone) + "</span></td><td>" + esc(b.dept) +
+          "</td><td>" + esc(b.purpose) +
           (b.remarks ? "<br><span class='hintline'>" + esc(b.remarks) + "</span>" : "") +
           "</td><td>" + esc(b.support) + "</td><td>" + statusPill(b.status) + "</td><td><div class='row-actions'>" +
           buttons.join("") + "</div></td></tr>";
       }).join("") : '<tr><td colspan="9" class="empty">No rows match this filter.</td></tr>';
+    }
+
+    /** Small "actual 10:05–11:28 · 5 min late" line under the booked time. */
+    function attendanceNote(b) {
+      if (!b.arrivedAt) return "";
+      const bits = [b.arrivedAt + "–" + (b.leftAt || "…")];
+      if (b.delayMins !== null && b.delayMins !== undefined) {
+        bits.push(b.delayMins > 0 ? b.delayMins + "m late" : b.delayMins < 0 ? (-b.delayMins) + "m early" : "on time");
+      }
+      if (b.overrunMins !== null && b.overrunMins !== undefined && b.overrunMins > 0) {
+        bits.push("+" + b.overrunMins + "m over");
+      }
+      return "<br><span class='hintline good'>&#10003; " + esc(bits.join(" · ")) + "</span>";
     }
 
     async function setStatus(id, status) {
@@ -1984,6 +2121,40 @@
       } catch (err) {
         toast("Not updated", err.message, "error");
       }
+    }
+
+    /** Admin confirms when the party actually arrived / left. Defaults to now. */
+    async function recordAttendance(id, which) {
+      const b = state.admin.bookings.filter((x) => x.id === id)[0];
+      if (!b) return;
+      const now = new Date();
+      const round5 = (d) => {
+        const m = Math.round((d.getHours() * 60 + d.getMinutes()) / 5) * 5;
+        return String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+      };
+      const isIn = which === "in";
+      const current = isIn ? b.arrivedAt : b.leftAt;
+      const suggested = current || (b.date === state.admin.config.today ? round5(now) : (isIn ? b.start : b.end));
+
+      const res = await ask(
+        isIn ? "Confirm arrival" : "Confirm departure",
+        (isIn ? "When did the party actually arrive for " : "When did the party actually leave ") +
+          b.datePretty + " " + b.start + "–" + b.end + " (" + b.dept + ")? " +
+          "24-hour time. Clear the box to remove the stamp.",
+        true, "Save", suggested, isIn ? "Arrived at" : "Left at");
+      if (!res.ok) return;
+
+      const value = res.note === undefined ? "" : String(res.note).trim();
+      const payload = { id: id };
+      payload[isIn ? "arrivedAt" : "leftAt"] = value;
+      try {
+        const out = await call("setAttendance", payload);
+        toast("Attendance recorded", out.message, "success");
+        await refreshAdmin();
+      } catch (err) {
+        toast("Not recorded", err.message, "error");
+      }
+      return suggested;
     }
 
     function renderHolidayChips() {
@@ -2072,72 +2243,188 @@
     }
 
     /* =============================== report =============================== */
+    /*
+     * Institutional format: letterhead, document-control block, executive summary,
+     * numbered sections, then a signature block. Everything is derived from the
+     * live register — nothing here is typed by hand.
+     */
     function renderReport() {
       const d = state.admin;
+      if (!$("#pdfReport")) return;
       if (!d) { $("#pdfReport").innerHTML = '<div class="empty">Sign in to the console to build the report.</div>'; return; }
+
       const k = d.kpis, c = d.config;
       const today = c.today;
+      const month = today.slice(0, 7);
+      const monthRows = d.bookings.filter((b) => b.date.slice(0, 7) === month);
       const upcoming = d.bookings.filter((b) => b.date >= today && ["Pending", "Confirmed"].indexOf(b.status) >= 0)
         .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start)).slice(0, 18);
-      const month = d.bookings.filter((b) => b.date.slice(0, 7) === today.slice(0, 7));
+      const held = monthRows.filter((b) => b.date <= today && b.status !== "Cancelled")
+        .sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start));
+      const reportId = "OSH/UTIL/" + month.replace("-", "") + "/" + String(monthRows.length).padStart(3, "0");
 
-      const table = (head, rows) => '<table class="report-table"><thead><tr>' +
+      let sectionNo = 0;
+      const section = (title, inner, pageBreak) => {
+        sectionNo += 1;
+        return '<section class="report-section' + (pageBreak ? " report-section-note" : "") + '">' +
+          '<div class="report-section-title"><span class="num">' + sectionNo + ".</span><span>" +
+          esc(title) + "</span></div>" + inner + "</section>";
+      };
+      const table = (head, rows, note) => '<table class="report-table"><thead><tr>' +
         head.map((h) => "<th>" + esc(h) + "</th>").join("") + "</tr></thead><tbody>" +
-        (rows.length ? rows.map((r) => "<tr>" + r.map((c2) => "<td>" + esc(c2) + "</td>").join("") + "</tr>").join("")
-                     : '<tr><td colspan="' + head.length + '">No records.</td></tr>') + "</tbody></table>";
+        (rows.length ? rows.map((r) => "<tr>" + r.map((cell) => "<td>" + esc(cell) + "</td>").join("") + "</tr>").join("")
+                     : '<tr><td colspan="' + head.length + '">No records for this period.</td></tr>') +
+        "</tbody></table>" + (note ? '<div class="report-note">' + note + "</div>" : "");
+
+      /* ---- executive summary, written from the numbers ---- */
+      const pct = (n) => n + "%";
+      const summary = [
+        "The " + esc(c.hallName) + " was booked <b>" + k.monthBookings + "</b> time(s) in <b>" +
+          esc(k.monthLabel) + "</b>, consuming <b>" + k.monthHours + " h</b> of the <b>" + k.monthCapacity +
+          " h</b> available — a utilisation of <b>" + pct(k.utilisation) + "</b>.",
+        "Average booking ran <b>" + k.avgDuration + " min</b> for <b>" + k.avgAttendees +
+          "</b> attendees against a capacity of " + c.maxAttendees + " seats (<b>" + pct(k.seatUtilisation) +
+          "</b> seat utilisation); the busiest window was <b>" + esc(k.peakSlot) + "</b>.",
+        k.cancelled || k.noShow
+          ? "<b>" + k.cancelled + "</b> booking(s) were cancelled (" + pct(k.cancelRate) + " of requests) and <b>" +
+            k.noShow + "</b> recorded as no-show, releasing capacity that other departments could have used."
+          : "No cancellations or no-shows were recorded this period.",
+        k.attendanceLogged
+          ? "Arrival was confirmed for <b>" + k.attendanceLogged + " of " + k.heldSoFar + "</b> meetings held (" +
+            pct(k.attendanceCover) + "). Measured occupancy was <b>" + k.actualHours + " h</b>, " +
+            (k.bookedVsActual >= 0
+              ? "leaving <b>" + k.bookedVsActual + " h</b> reserved but unused. "
+              : "which is <b>" + Math.abs(k.bookedVsActual) + " h beyond</b> the booked windows. ") + "<b>" + pct(k.lateStartRate) +
+            "</b> of meetings started late, by <b>" + k.avgLateStart + " min</b> on average." +
+            (k.overrunCount ? " <b>" + k.overrunCount + "</b> ran past the booked end by " + k.avgOverrun + " min on average." : "")
+          : "Attendance has not yet been confirmed for this period, so occupancy below reflects bookings rather than measured use.",
+        k.pending ? "<b>" + k.pending + "</b> request(s) await approval at the time of generation." : ""
+      ].filter(Boolean);
 
       $("#pdfReport").innerHTML =
-        '<div class="pdf-cover">' +
-          '<div class="report-logos">' +
-            (state.logoUrl ? '<div class="report-logo" style="background:#fff;padding:6px 10px">' +
-              '<img src="' + esc(state.logoUrl) + '" alt="KLE" style="height:32px;display:block" /></div>' : "") +
-            '<div class="report-logo">KLE-C-SHInE</div><div class="report-logo">EE LAB</div>' +
-            '<div class="report-logo">HUBBALLI</div></div>' +
-          '<div><div class="report-cover-title">' + esc(c.hallName) + ' <em>utilisation report</em></div>' +
-          '<div class="report-cover-sub">' + esc(k.monthLabel) + " · generated from the live booking register on " +
-          esc(c.serverTime) + " IST. Every figure below is computed server-side from the Bookings sheet.</div></div>" +
-          '<div class="report-cover-sub">Sheet last updated ' + esc(c.lastUpdated) + "</div>" +
+        /* ---- letterhead ---- */
+        '<div class="letterhead">' +
+          '<div class="letterhead-logo">' +
+            (state.logoUrl
+              ? '<img src="' + esc(state.logoUrl) + '" alt="Institution logo" />'
+              : '<span class="fallback">OSH</span>') +
+          "</div>" +
+          "<div>" +
+            '<div class="letterhead-inst">' + esc(c.campus) + "</div>" +
+            '<div class="letterhead-unit">Electrical Engineering Laboratory &middot; Venue Administration</div>' +
+            '<div class="letterhead-title">' + esc(c.hallName) + " <em>utilisation report</em></div>" +
+            '<div class="report-logos"><span class="report-logo">' + esc(k.monthLabel) +
+              '</span><span class="report-logo">CONFIDENTIAL &middot; INTERNAL</span>' +
+              '<span class="report-logo">REF ' + esc(reportId) + "</span></div>" +
+          "</div>" +
         "</div>" +
 
+        /* ---- document control ---- */
+        '<section class="report-section">' +
+          '<table class="doc-control">' +
+            "<tr><th>Report ref</th><td>" + esc(reportId) + "</td>" +
+                "<th>Period</th><td>" + esc(k.monthLabel) + " (to " + esc(prettyDate(today)) + ")</td></tr>" +
+            "<tr><th>Venue</th><td>" + esc(c.hallName) + ", " + esc(c.campus) + "</td>" +
+                "<th>Generated</th><td>" + esc(c.serverTime) + " IST</td></tr>" +
+            "<tr><th>Prepared by</th><td>Booking portal (automated)</td>" +
+                "<th>Data source</th><td>Booking register &middot; sheet updated " + esc(c.lastUpdated) + "</td></tr>" +
+            "<tr><th>Operating hours</th><td>Mon&ndash;Fri " + esc(c.openWeekday) + "&ndash;" + esc(c.closeWeekday) +
+                " &middot; Sat " + esc(c.openSaturday) + "&ndash;" + esc(c.closeSaturday) + "</td>" +
+                "<th>Changeover</th><td>" + c.buffer + " min enforced between meetings</td></tr>" +
+          "</table>" +
+        "</section>" +
+
+        /* ---- headline figures ---- */
         '<div class="report-kpis">' +
-          reportKpi("Bookings", k.monthBookings, k.monthLabel) +
+          reportKpi("Bookings", k.monthBookings, esc(k.monthLabel)) +
           reportKpi("Hours booked", k.monthHours + " h", "of " + k.monthCapacity + " h capacity") +
           reportKpi("Utilisation", k.utilisation + "%", "of open hours") +
-          reportKpi("Cancellations", k.cancelled, k.cancelRate + "% of requests") +
+          reportKpi("Actual hours", k.actualHours + " h", "confirmed in the room") +
         "</div>" +
 
-        '<div class="report-section"><div class="report-section-title">Operating summary</div>' +
+        /* ---- 1. executive summary ---- */
+        section("Executive summary",
+          '<div class="exec-summary">' + summary.map((s) => "<div>" + s + "</div>").join("") + "</div>") +
+
+        /* ---- 2. operating summary ---- */
+        section("Operating summary",
           table(["Metric", "Value", "Metric", "Value"], [
             ["Meetings today", k.todayBookings, "Awaiting approval", k.pending],
             ["Next 7 days", k.next7, "Upcoming total", k.upcomingTotal],
             ["Average duration", k.avgDuration + " min", "Average attendees", k.avgAttendees],
             ["Seat utilisation", k.seatUtilisation + "%", "Average lead time", k.avgLeadDays + " days"],
-            ["Busiest hour", k.peakSlot, "No-shows", k.noShow],
-            ["Departments served", k.departments, "Top department", k.topDept + " (" + k.topDeptCount + ")"]
-          ]) +
-          '<div class="report-note">Capacity assumes ' + esc(c.openWeekday) + "–" + esc(c.closeWeekday) +
-          " on weekdays and " + esc(c.openSaturday) + "–" + esc(c.closeSaturday) +
-          " on Saturdays, excluding closed days and every listed holiday. A " + c.buffer +
-          " minute changeover gap is reserved between meetings and is not counted as booked time.</div></div>" +
+            ["Busiest hour", k.peakSlot, "Departments served", k.departments],
+            ["Cancellations", k.cancelled + " (" + k.cancelRate + "%)", "No-shows", k.noShow]
+          ],
+          "Capacity assumes the operating hours above, excluding closed days and every listed holiday. " +
+          "The " + c.buffer + " minute changeover gap is reserved around each meeting and is not counted as booked time.")) +
 
-        '<div class="report-section"><div class="report-section-title">Department load · ' + esc(k.monthLabel) + "</div>" +
-          table(["Department", "Bookings", "Share"], (d.charts.dept || []).map((r) => [
-            r.label, r.value, (month.length ? Math.round(r.value / month.length * 100) : 0) + "%"
-          ])) + "</div>" +
+        /* ---- 3. attendance and punctuality ---- */
+        section("Attendance and punctuality",
+          table(["Measure", "Value", "Basis"], [
+            ["Meetings held in period", k.heldSoFar, "excludes cancellations and future dates"],
+            ["Arrival confirmed by admin", k.attendanceLogged + " (" + k.attendanceCover + "%)", "in/out stamped in the register"],
+            ["Not yet confirmed", k.unrecorded, "no arrival stamp recorded"],
+            ["Hours actually occupied", k.actualHours + " h", "both stamps present"],
+            (k.bookedVsActual >= 0
+              ? ["Reserved but not used", k.bookedVsActual + " h", "booked hours less measured hours"]
+              : ["Used beyond booking", Math.abs(k.bookedVsActual) + " h", "measured hours exceed the booked window"]),
+            ["Meetings starting late", k.lateStartRate + "%", "more than 5 min after the booked start"],
+            ["Average late start", k.avgLateStart + " min", "late meetings only"],
+            ["Meetings running over", k.overrunCount, "more than 5 min past the booked end"],
+            ["Average overrun", k.avgOverrun + " min", "overrunning meetings only"]
+          ],
+          k.unrecorded
+            ? "<b>" + k.unrecorded + " meeting(s) still lack an arrival stamp.</b> Until those are confirmed, " +
+              "occupancy figures understate actual use and no-show counts cannot be relied upon."
+            : "Every meeting held in this period has a confirmed arrival, so occupancy figures are complete.")) +
 
-        '<div class="report-section"><div class="report-section-title">Slot load by start hour</div>' +
-          table(["Window", "Bookings"], (d.charts.hours || []).map((r) => [r.label + " – " + shiftHour(r.label), r.value])) + "</div>" +
+        /* ---- 4. department load ---- */
+        section("Department load",
+          table(["Department", "Bookings", "Share of period"], (d.charts.dept || []).map((r) => [
+            r.label, r.value, (monthRows.length ? Math.round(r.value / monthRows.length * 100) : 0) + "%"
+          ]))) +
 
-        '<div class="report-section"><div class="report-section-title">Upcoming schedule</div>' +
+        /* ---- 5. demand by hour ---- */
+        section("Demand by start hour",
+          table(["Window", "Bookings"], (d.charts.hours || []).map((r) => [r.label + " – " + shiftHour(r.label), r.value]),
+            "Use this to schedule maintenance and cleaning outside the busiest windows.")) +
+
+        /* ---- 6. meetings held, with attendance ---- */
+        section("Meetings held in this period",
+          table(["Date", "Booked", "Actual in / out", "Late", "Over", "Department", "Requester", "Status"],
+            held.slice(0, 24).map((b) => [
+              b.datePretty, b.start + "–" + b.end,
+              b.arrivedAt ? b.arrivedAt + " / " + (b.leftAt || "—") : "not confirmed",
+              b.delayMins === null || b.delayMins === undefined ? "—" : (b.delayMins > 0 ? b.delayMins + "m" : "on time"),
+              b.overrunMins === null || b.overrunMins === undefined ? "—" : (b.overrunMins > 0 ? b.overrunMins + "m" : "—"),
+              b.dept, b.name, b.status
+            ])), true) +
+
+        /* ---- 7. upcoming schedule ---- */
+        section("Upcoming schedule",
           table(["Date", "Time", "Department", "Purpose", "Requester", "Attendees", "Status"],
-            upcoming.map((b) => [b.datePretty, b.start + " – " + b.end, b.dept, b.purpose, b.name, b.attendees, b.status])) + "</div>" +
+            upcoming.map((b) => [b.datePretty, b.start + " – " + b.end, b.dept, b.purpose, b.name, b.attendees, b.status]))) +
 
-        '<div class="report-section"><div class="report-section-title">Closed dates ahead</div>' +
+        /* ---- 8. closures ---- */
+        section("Closed dates ahead",
           table(["Date", "Occasion", "Type"], (d.holidays || []).filter((h) => h.date >= today).slice(0, 20)
-            .map((h) => [h.datePretty, h.name, h.type])) +
-          '<div class="report-note">Made with &#10084; ~rhc · EE Lab, KLE-C-SHInE · ' + esc(c.hallName) + " booking portal.</div></div>";
+            .map((h) => [h.datePretty, h.name, h.type]))) +
+
+        /* ---- signatures ---- */
+        '<div class="signature-block">' +
+          '<div class="sign-slot"><b>Prepared by</b>Booking portal, automated<br>' + esc(c.serverTime) + " IST</div>" +
+          '<div class="sign-slot"><b>Verified by</b>Hall caretaker<br>Signature &amp; date</div>' +
+          '<div class="sign-slot"><b>Approved by</b>Head of Department<br>Signature &amp; date</div>' +
+        "</div>" +
+        '<div class="report-end">End of report &middot; ' + esc(reportId) + " &middot; generated from the live register</div>";
     }
 
+    function prettyDate(iso) {
+      const p = String(iso || "").split("-");
+      if (p.length !== 3) return String(iso || "");
+      return p[2] + "-" + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+p[1] - 1] + "-" + p[0];
+    }
     function shiftHour(hhmm) {
       const m = toMin(hhmm);
       return m < 0 ? "" : toHHMM(m + 60);
@@ -2217,6 +2504,9 @@
 
       const status = t.closest("[data-status]");
       if (status) { setStatus(status.dataset.id, status.dataset.status); return; }
+
+      const att = t.closest("[data-att]");
+      if (att) { recordAttendance(att.dataset.id, att.dataset.att); return; }
 
       const detail = t.closest("[data-detail]");
       if (detail) {
@@ -2347,7 +2637,14 @@
         openWeekday: "10:00", closeWeekday: "18:00", openSaturday: "10:00", closeSaturday: "14:00",
         closedWeekdays: ["Sun"], buffer: 45, minDuration: 30, maxDuration: 240, slotStep: 15,
         maxAttendees: 20, minLead: 60, maxAdvanceDays: 60, emailDomains: ["kletech.ac.in"],
-        autoApprove: true, lastUpdated: "preview mode", today: today, serverTime: "preview"
+        autoApprove: true, lastUpdated: "preview mode", today: today, serverTime: "preview",
+        /* preview mode demonstrates the carousel with the labelled placeholders;
+           live mode shows only what GALLERY names in the Config sheet */
+        gallery: [
+          { url: "assets/placeholder-hall.svg", caption: "Placeholder — the hall seen down the centre aisle." },
+          { url: "assets/placeholder-dais.svg", caption: "Placeholder — dais, lectern and screen wall." },
+          { url: "assets/placeholder-seating.svg", caption: "Placeholder — indicative seating for 20." }
+        ]
       };
       const bookings = [
         { id: "OSH-DEMO-001", start: "11:00", end: "12:00", dept: "CSE", purpose: "Board of Studies review", status: "Confirmed", attendees: 12 },
