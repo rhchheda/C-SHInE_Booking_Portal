@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Old Senate Hall Booking · KLE-CTIE</title>
+  <meta name="description" content="Booking portal for the Old Senate Hall, KLE-CTIE Hubballi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0d1b3e;
+      --navy-2: #182b55;
+      --gold: #c9a84c;
+      --gold-2: #ead282;
+      --ink: #13203c;
+      --muted: #68758f;
+      --line: rgba(13, 27, 62, 0.12);
+      --paper: #ffffff;
+      --soft: #f5f1e8;
+      --wash: #eef3f8;
+      --green: #1f7a4d;
+      --red: #c24035;
+      --blue: #226da8;
+      --violet: #7251a5;
+      --cyan: #1b8a9a;
+      --rose: #be3455;
+      --amber: #8a6500;
+      --shadow: 0 18px 45px rgba(13, 27, 62, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Outfit, system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--soft);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: var(--blue); }
+
+    /* ---------- boot ---------- */
+    .loading {
+      position: fixed; inset: 0; z-index: 60;
+      display: grid; place-items: center;
+      background: var(--navy); color: white;
+    }
+    .loading.hidden { display: none; }
+    .loading-box { text-align: center; }
+    .loading-logo { font-family: "Cormorant Garamond", serif; font-size: 40px; font-weight: 600; }
+    .loading-logo span { color: var(--gold); font-style: italic; }
+    .loading-text {
+      margin-top: 12px; color: rgba(255,255,255,0.55);
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .loading-rings { position: relative; width: 86px; height: 86px; margin: 0 auto 18px; }
+    .loading-rings::before, .loading-rings::after {
+      content: ""; position: absolute; inset: 0; border-radius: 50%;
+      border: 2px solid transparent; border-top-color: var(--gold);
+      border-right-color: rgba(234,210,130,0.55); animation: spin 1.4s linear infinite;
+    }
+    .loading-rings::after {
+      inset: 12px; border-top-color: rgba(255,255,255,0.72);
+      animation-duration: 1.9s; animation-direction: reverse;
+    }
+    .loading-dot {
+      position: absolute; inset: 31px; border-radius: 50%;
+      background: var(--gold); box-shadow: 0 0 26px rgba(201,168,76,0.65);
+      animation: pulse 1.25s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.78); opacity: 0.65; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ---------- admin sign-in ---------- */
+    .login-screen {
+      position: fixed; inset: 0; z-index: 50; display: none; place-items: center;
+      background:
+        linear-gradient(135deg, rgba(13,27,62,0.96), rgba(24,43,85,0.92)),
+        radial-gradient(circle at 20% 20%, rgba(201,168,76,0.18), transparent 30%);
+      color: white; padding: 20px;
+    }
+    .login-screen.show { display: grid; }
+    .login-card {
+      width: min(440px, 100%);
+      border: 1px solid rgba(201,168,76,0.32); border-radius: 10px;
+      background: rgba(255,255,255,0.08); box-shadow: 0 28px 70px rgba(0,0,0,0.24);
+      padding: 24px; backdrop-filter: blur(14px);
+    }
+    .login-title { font-family: "Cormorant Garamond", serif; font-size: 34px; line-height: 1.05; }
+    .login-title span { color: var(--gold-2); font-style: italic; }
+    .login-copy { color: rgba(255,255,255,0.62); margin: 10px 0 18px; line-height: 1.55; font-size: 13.5px; }
+    .login-card .field { width: 100%; background: rgba(255,255,255,0.95); }
+    .login-actions {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-top: 14px;
+    }
+    .login-error { color: #ffb8b8; min-height: 18px; font-size: 13px; }
+
+    /* ---------- chrome ---------- */
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(13, 27, 62, 0.96); color: white;
+      border-bottom: 1px solid rgba(201,168,76,0.24); backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1240px; margin: 0 auto; padding: 11px 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 200px; }
+    .mark {
+      width: 40px; height: 40px; border: 1px solid rgba(201,168,76,0.7);
+      display: grid; place-items: center; color: var(--gold-2);
+      font-family: "Cormorant Garamond", serif; font-size: 20px; font-weight: 600;
+      border-radius: 8px; overflow: hidden; flex: none;
+    }
+    .mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .mark.has-logo {
+      background: #ffffff; border-color: rgba(255,255,255,0.34); padding: 3px;
+    }
+    .mark.has-logo #brandMono { display: none; }
+    .brand-name { font-weight: 700; line-height: 1.05; }
+    .brand-sub {
+      color: rgba(255,255,255,0.5); font-size: 11px;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-top: 3px;
+    }
+    .nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; }
+    .nav button, .mode button, .icon-btn {
+      border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.82); min-height: 34px; border-radius: 8px;
+      padding: 7px 11px; font-size: 13px;
+    }
+    .nav button.active, .mode button.active {
+      background: var(--gold); color: var(--navy); border-color: var(--gold); font-weight: 700;
+    }
+    .mode { display: flex; align-items: center; gap: 6px; }
+    /* The console is not advertised on the public page: the Admin button appears
+       only when the URL carries the console flag (see consoleRequested()). */
+    #adminNav, #adminBtn, #logoutBtn, #reportNav { display: none; }
+    body.console-url #adminBtn { display: inline-flex; }
+    body.admin #adminBtn { display: none; }
+    body.admin #adminNav, body.admin #reportNav, body.admin #logoutBtn { display: inline-flex; }
+    .mode:empty { display: none; }
+
+    /* ---------- hero ---------- */
+    .hero {
+      --hero-art: none;
+      background:
+        linear-gradient(90deg, rgba(13,27,62,0.97) 0%, rgba(13,27,62,0.88) 42%, rgba(24,43,85,0.7) 100%),
+        var(--hero-image, var(--hero-art)) right center / auto 118% no-repeat,
+        var(--navy);
+      color: white; position: relative; overflow: hidden;
+    }
+    @media (max-width: 720px) { .hero { background-size: 0 0, auto 100%, auto; } }
+    .hero::before {
+      content: ""; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.07) 1px, transparent 1px);
+      background-size: 48px 48px; mix-blend-mode: screen; opacity: 0.7;
+    }
+    .hero-inner {
+      position: relative; max-width: 1240px; margin: 0 auto;
+      padding: 40px 18px 30px;
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 350px);
+      gap: 28px; align-items: center;
+    }
+    .eyebrow {
+      color: var(--gold-2); letter-spacing: 0.14em; text-transform: uppercase;
+      font-size: 11.5px; font-weight: 700;
+    }
+    h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(34px, 5.6vw, 62px);
+      line-height: 0.98; margin: 10px 0; max-width: 780px;
+    }
+    h1 em { color: var(--gold-2); font-style: italic; }
+    .hero-copy { color: rgba(255,255,255,0.66); max-width: 660px; line-height: 1.6; font-size: 14.5px; }
+    .hero-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .hero-pill {
+      display: inline-flex; align-items: center; min-height: 28px;
+      border: 1px solid rgba(234,210,130,0.3); border-radius: 999px; padding: 6px 11px;
+      color: rgba(255,255,255,0.76); background: rgba(255,255,255,0.05);
+      font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em;
+    }
+    .live {
+      border: 1px solid rgba(201,168,76,0.3); padding: 18px; border-radius: 10px; min-width: 0;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)),
+        radial-gradient(circle at top right, rgba(201,168,76,0.18), transparent 48%);
+      box-shadow: 0 18px 46px rgba(0,0,0,0.18);
+    }
+    .live-label {
+      color: rgba(255,255,255,0.5); font-size: 10.5px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .live-value {
+      margin-top: 6px; color: var(--gold-2);
+      font-family: "JetBrains Mono", monospace; font-size: 12px;
+    }
+    .live-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: #37d47e; margin-right: 7px; vertical-align: 1px;
+      box-shadow: 0 0 0 3px rgba(55,212,126,0.22); animation: pulse 1.6s ease-in-out infinite;
+    }
+    .live-dot.shut { background: #ff6b6b; box-shadow: 0 0 0 3px rgba(255,107,107,0.22); }
+    .live-program {
+      margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.12);
+      display: grid; gap: 8px; color: rgba(255,255,255,0.68); font-size: 13px; line-height: 1.4;
+    }
+    .live-program b { color: white; }
+
+    main { max-width: 1240px; margin: 0 auto; padding: 20px 18px 56px; }
+
+    .notice {
+      border: 1px solid var(--gold); border-left-width: 5px; border-radius: 8px;
+      background: #fffaee; color: #6b5416; padding: 12px 14px; margin-bottom: 16px;
+      font-size: 13.5px; line-height: 1.5;
+    }
+    .notice.warn { border-color: var(--red); background: #fdecec; color: #8f2f27; }
+    .notice.hidden { display: none; }
+
+    /* ---------- KPI tiles ---------- */
+    .kpis {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+      gap: 12px; margin-bottom: 18px;
+    }
+    .kpi {
+      border: 1px solid var(--line); background: var(--paper); border-radius: 8px;
+      padding: 15px; min-height: 106px; box-shadow: 0 10px 26px rgba(13,27,62,0.07);
+      text-align: left; position: relative; overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: riseIn 0.45s ease both;
+    }
+    .kpi::before {
+      content: ""; position: absolute; inset: 0 0 auto 0; height: 4px;
+      background: var(--accent, var(--gold));
+    }
+    .kpi::after {
+      content: ""; position: absolute; width: 88px; height: 88px;
+      right: -40px; bottom: -42px; border-radius: 50%;
+      background: color-mix(in srgb, var(--accent, var(--gold)) 15%, transparent);
+    }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .kpi-label {
+      color: var(--muted); font-size: 10.5px; font-weight: 700;
+      letter-spacing: 0.09em; text-transform: uppercase;
+    }
+    .kpi-value {
+      font-family: "Cormorant Garamond", serif; font-size: 40px; line-height: 1;
+      margin-top: 8px; color: var(--accent, var(--navy));
+    }
+    .kpi-value small { font-size: 15px; font-family: Outfit, sans-serif; color: var(--muted); }
+    .kpi-sub { color: var(--muted); font-size: 11.5px; margin-top: 5px; line-height: 1.35; }
+
+    /* ---------- panels ---------- */
+    .panel {
+      display: none; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 18px;
+    }
+    .panel.active { display: block; }
+    .panel-head {
+      padding: 17px 18px; border-bottom: 1px solid var(--line);
+      display: flex; justify-content: space-between; gap: 12px;
+      align-items: center; flex-wrap: wrap;
+      background: linear-gradient(180deg, #fff, #fbfaf7);
+    }
+    .panel-title { font-size: 19px; font-weight: 700; color: var(--navy); }
+    .panel-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .toolbar {
+      padding: 13px 18px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      border-bottom: 1px solid var(--line); background: #fbfcfd;
+    }
+    .toolbar .hint { color: var(--muted); font-size: 12.5px; }
+    .field {
+      border: 1px solid var(--line); background: white; border-radius: 8px;
+      padding: 9px 11px; min-height: 38px; color: var(--ink);
+    }
+    .field:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+    .field:disabled { background: #f4f6f9; color: var(--muted); }
+    .search { min-width: 220px; flex: 1; }
+    .primary {
+      border: 1px solid var(--gold); background: var(--gold); color: var(--navy);
+      border-radius: 8px; padding: 10px 14px; min-height: 38px; font-weight: 700;
+    }
+    .primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .ghost {
+      border: 1px solid var(--line); background: white; color: var(--navy);
+      border-radius: 8px; padding: 8px 12px; min-height: 36px; font-weight: 600; font-size: 13px;
+    }
+    .ghost:hover { border-color: var(--gold); }
+    .danger { border-color: #e6b3ae; color: var(--red); }
+
+    /* ---------- booking form ---------- */
+    .form-grid {
+      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px; padding: 18px;
+    }
+    .form-grid label {
+      display: grid; gap: 6px; color: var(--muted);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .span2 { grid-column: span 2; }
+    .span3 { grid-column: span 3; }
+    .span4 { grid-column: span 4; }
+    .span6 { grid-column: span 6; }
+    .otp-row { display: flex; gap: 8px; }
+    .otp-row .field { flex: 1; }
+    .otp-code { letter-spacing: 6px; font-family: "JetBrains Mono", monospace; text-align: center; }
+    .verified { border-color: var(--green) !important; background: #eef7f1 !important; }
+    .hintline { color: var(--muted); font-size: 12px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+    .hintline.err { color: var(--red); font-weight: 600; }
+    .hintline.good { color: var(--green); font-weight: 600; }
+    .duration-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--wash); border: 1px solid var(--line); border-radius: 999px;
+      padding: 7px 13px; font-size: 12.5px; font-weight: 700; color: var(--navy);
+    }
+    .radio-wrap {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px;
+    }
+    .form-grid label.radio-chip, .radio-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1px solid var(--line); border-radius: 999px; padding: 8px 13px;
+      font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0;
+      color: var(--ink); background: white; cursor: pointer;
+    }
+    .radio-chip:has(input:checked) { border-color: var(--gold); background: #fffaee; font-weight: 700; }
+    .form-actions {
+      padding: 0 18px 18px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    }
+    .form-actions .primary { min-width: 220px; }
+
+    /* ---------- timeline ---------- */
+    .timeline-wrap { padding: 18px; }
+    .timeline {
+      position: relative; height: 62px; border: 1px solid var(--line);
+      border-radius: 8px; background: repeating-linear-gradient(90deg, #f7f9fb 0 1px, #fff 1px 100%);
+      overflow: hidden;
+    }
+    .tl-free { position: absolute; top: 0; bottom: 0; background: rgba(31,122,77,0.1); }
+    .tl-buffer {
+      position: absolute; top: 0; bottom: 0;
+      background: repeating-linear-gradient(45deg, rgba(201,168,76,0.35) 0 5px, rgba(201,168,76,0.12) 5px 10px);
+    }
+    .tl-book {
+      position: absolute; top: 6px; bottom: 6px; border-radius: 5px;
+      background: var(--navy); color: white; font-size: 11px; font-weight: 700;
+      padding: 5px 7px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+      box-shadow: 0 4px 10px rgba(13,27,62,0.25);
+    }
+    .tl-book.pending { background: var(--amber); }
+    .tl-now { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--red); }
+    .tl-axis {
+      display: flex; justify-content: space-between; margin-top: 6px;
+      color: var(--muted); font-size: 11px; font-family: "JetBrains Mono", monospace;
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip {
+      border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px;
+      font-size: 12.5px; font-weight: 700; background: #eef7f1; color: var(--green);
+    }
+    .chip.mute { background: var(--wash); color: var(--muted); font-weight: 500; }
+    .chip button { border: 0; background: none; color: inherit; padding: 0 0 0 6px; font-weight: 700; }
+
+    /* ---------- tables ---------- */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 11px 13px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th {
+      color: var(--muted); font-size: 10.5px; letter-spacing: 0.08em;
+      text-transform: uppercase; background: #f7f9fb; position: sticky; top: 0;
+    }
+    tbody tr:hover { background: #fbfcfd; }
+    .table-scroll { max-height: 62vh; overflow: auto; }
+    .status {
+      display: inline-flex; border-radius: 999px; padding: 4px 9px; min-height: 23px;
+      font-size: 10.5px; font-weight: 700; background: #edf5ef; color: var(--green);
+      white-space: nowrap; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .status.pending { background: #fff6df; color: var(--amber); }
+    .status.cancelled { background: #ffecec; color: var(--red); }
+    .status.completed { background: #f1f3f6; color: var(--muted); }
+    .status.noshow { background: #f0e7fa; color: #5c3d8a; }
+    .row-actions { display: flex; flex-wrap: wrap; gap: 5px; }
+    .mono { font-family: "JetBrains Mono", monospace; font-size: 11.5px; }
+    .empty { padding: 34px 18px; color: var(--muted); text-align: center; }
+
+    /* ---------- charts ---------- */
+    .chart-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; padding: 18px;
+    }
+    .chart-block { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: white; }
+    .chart-block h3 {
+      margin: 0; padding: 12px 14px; color: var(--navy); background: #f7f9fb;
+      border-bottom: 1px solid var(--line); font-size: 14px;
+    }
+    .chart-body { padding: 14px; display: grid; gap: 10px; }
+    .metric-row {
+      display: grid; grid-template-columns: minmax(96px, 1.1fr) 1.6fr auto;
+      gap: 10px; align-items: center; font-size: 12.5px;
+    }
+    .metric-track { height: 8px; border-radius: 999px; background: #edf1f6; overflow: hidden; }
+    .metric-fill { height: 100%; border-radius: inherit; background: var(--gold); transition: width 0.4s ease; }
+    .metric-row b { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+    .metric-row span { font-weight: 700; color: var(--navy); font-family: "JetBrains Mono", monospace; }
+    .columns { display: flex; align-items: flex-end; gap: 7px; height: 120px; padding: 4px 0; }
+    .column { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; text-align: center; }
+    .column .bar {
+      background: linear-gradient(180deg, var(--navy-2), var(--navy));
+      border-radius: 4px 4px 0 0; min-height: 3px; transition: height 0.4s ease;
+    }
+    .column .cap { font-size: 10.5px; color: var(--muted); }
+    .column .num { font-size: 11px; font-weight: 700; color: var(--navy); }
+
+    /* ---------- dialogs / toasts ---------- */
+    dialog {
+      border: 0; border-radius: 10px; box-shadow: var(--shadow);
+      width: min(640px, calc(100vw - 26px)); padding: 0;
+    }
+    dialog::backdrop { background: rgba(13,27,62,0.5); }
+    .modal-head {
+      padding: 15px 18px; color: white; background: var(--navy);
+      display: flex; justify-content: space-between; gap: 12px; align-items: center;
+    }
+    .modal-title { font-weight: 700; }
+    .modal-body { padding: 18px; display: grid; gap: 12px; }
+    .modal-body label {
+      display: grid; gap: 6px; color: var(--muted); font-size: 11px;
+      font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .modal-body p { margin: 0; line-height: 1.55; color: var(--ink); }
+    textarea.field { min-height: 78px; resize: vertical; }
+    .modal-actions { padding: 0 18px 18px; display: flex; justify-content: flex-end; gap: 10px; }
+    .kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; font-size: 13.5px; }
+    .kv dt { color: var(--muted); }
+    .kv dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+
+    .toast-wrap {
+      position: fixed; right: 16px; bottom: 54px; z-index: 80;
+      display: grid; gap: 10px; width: min(380px, calc(100vw - 32px));
+    }
+    .toast {
+      border-radius: 8px; border: 1px solid rgba(13,27,62,0.12); background: white;
+      box-shadow: var(--shadow); padding: 12px 14px; display: grid; gap: 3px;
+      animation: toastIn 0.25s ease both;
+    }
+    .toast-title { font-weight: 800; color: var(--navy); font-size: 13px; }
+    .toast-body { color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .toast.error { border-left: 4px solid var(--red); }
+    .toast.success { border-left: 4px solid var(--green); }
+    .toast.info { border-left: 4px solid var(--blue); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- guidelines ---------- */
+    .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; padding: 18px; }
+    .rule-card { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .rule-card h3 {
+      margin: 0; padding: 12px 14px; font-size: 14px; color: var(--navy);
+      background: #f7f9fb; border-bottom: 1px solid var(--line);
+    }
+    .rule-card ul { margin: 0; padding: 12px 14px 14px 30px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .rule-card li b { color: var(--ink); }
+
+    /* ---------- printable report ---------- */
+    .pdf-report { margin: 18px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: white; }
+    .pdf-cover {
+      min-height: 210px; padding: 26px; color: white;
+      background: linear-gradient(120deg, var(--navy) 0%, var(--navy-2) 60%, #22406f 100%);
+      display: grid; align-content: space-between; gap: 24px;
+    }
+    .report-logos { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .report-logo {
+      min-height: 44px; border: 1px solid rgba(234,210,130,0.58); border-radius: 8px;
+      display: grid; place-items: center; padding: 8px 12px;
+      background: rgba(255,255,255,0.12); color: var(--gold-2);
+      font-weight: 800; letter-spacing: 0.06em; font-size: 12px;
+    }
+    .report-cover-title {
+      font-family: "Cormorant Garamond", serif; font-size: clamp(30px, 4.4vw, 50px);
+      line-height: 1; max-width: 720px;
+    }
+    .report-cover-title em { color: var(--gold-2); font-style: italic; }
+    .report-cover-sub { margin-top: 10px; max-width: 720px; color: rgba(255,255,255,0.72); line-height: 1.55; font-size: 13.5px; }
+    .report-kpis {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
+      padding: 18px; background: #f7f9fb; border-bottom: 1px solid var(--line);
+    }
+    .report-kpi { border-radius: 8px; padding: 13px; color: white; background: var(--navy); min-height: 86px; }
+    .report-kpi:nth-child(2) { background: var(--blue); }
+    .report-kpi:nth-child(3) { background: var(--green); }
+    .report-kpi:nth-child(4) { background: var(--violet); }
+    .report-kpi-label { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.75); }
+    .report-kpi-value { margin-top: 7px; font-family: "Cormorant Garamond", serif; font-size: 34px; line-height: 1; }
+    .report-section { padding: 18px; break-inside: avoid; }
+    .report-section-title {
+      color: var(--navy); font-size: 16px; font-weight: 800; margin-bottom: 10px;
+      padding-bottom: 7px; border-bottom: 2px solid var(--gold);
+    }
+    .report-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    .report-table th { background: var(--navy); color: white; }
+    .report-table th, .report-table td { border: 1px solid #dfe5ee; padding: 7px 8px; vertical-align: top; }
+    .report-table tr:nth-child(even) td { background: #f8fafc; }
+    .report-note { color: var(--muted); font-size: 11.5px; line-height: 1.5; margin-top: 9px; }
+
+    /* ---------- footer ---------- */
+    .footer {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; height: 40px;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      background: var(--navy); color: rgba(255,255,255,0.68);
+      border-top: 1px solid rgba(201,168,76,0.24); font-size: 12px;
+      padding: 0 12px; text-align: center;
+    }
+    .heart {
+      color: #ff2f45; font-size: 0.95em; display: inline-block;
+      animation: heartbeat 1.05s ease-in-out infinite; transform-origin: center;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      16% { transform: scale(1.28); }
+      30% { transform: scale(0.94); }
+      44% { transform: scale(1.18); }
+      60% { transform: scale(1); }
+    }
+    .footer .sep { opacity: 0.35; }
+    #footerUpdated { color: var(--gold-2); font-family: "JetBrains Mono", monospace; font-size: 11px; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .topbar, .hero, .footer, .toast-wrap, .notice,
+      .panel:not(#report), #report .panel-head, #report .toolbar { display: none !important; }
+      main { max-width: none; padding: 0; }
+      #report, .pdf-report { display: block !important; border: 0; box-shadow: none; margin: 0; }
+      .pdf-cover, .report-kpis, .report-kpi, .report-table th {
+        print-color-adjust: exact; -webkit-print-color-adjust: exact;
+      }
+      @page { size: A4 portrait; margin: 12mm; }
+    }
+
+    @media (max-width: 1040px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .live { max-width: 460px; }
+      .form-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .span6 { grid-column: span 4; }
+      .report-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .topbar-inner { align-items: flex-start; flex-direction: column; }
+      .nav { justify-content: flex-start; }
+      .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .span2, .span3, .span4, .span6 { grid-column: span 2; }
+      h1 { font-size: clamp(30px, 10vw, 44px); }
+      table { min-width: 720px; }
+      .table-scroll { overflow-x: auto; }
+      .footer { font-size: 11px; height: auto; padding: 7px 10px; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <!--
+    ========================================================================
+    PUBLIC CLIENT — safe to publish on GitHub Pages.
+    No password, no rule, no sheet id lives in this file: every check is
+    re-run inside Apps Script (Code.gs) before anything is written.
+    Paste your Apps Script web-app /exec URL below once and deploy.
+    ========================================================================
+  -->
+  <script>
+    const GAS_URL = ""; // e.g. "https://script.google.com/macros/s/AKfy.../exec"
+  </script>
+
+  <div class="loading" id="loading">
+    <div class="loading-box">
+      <div class="loading-rings"><div class="loading-dot"></div></div>
+      <div class="loading-logo">Old Senate <span>Hall</span></div>
+      <div class="loading-text" id="loadingText">Connecting to the booking desk</div>
+    </div>
+  </div>
+
+  <!-- ADMIN BLOCK 3 of 4 — the sign-in overlay -->
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-title">Admin <span>console</span></div>
+      <div class="login-copy">
+        Sign in to review requests, KPIs, holidays and settings. The password is verified inside
+        Google Apps Script — it is never stored in this page.
+      </div>
+      <input class="field" id="loginPassword" type="password" placeholder="Admin password" autocomplete="current-password" />
+      <div class="login-actions">
+        <div class="login-error" id="loginError"></div>
+        <div style="display:flex;gap:8px">
+          <button class="ghost" id="loginCancel" type="button">Back</button>
+          <button class="primary" id="loginSubmit" type="button">Sign in</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end ADMIN BLOCK 3 -->
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <!-- KLE logo, top-left. Drop the official file at assets/kle-logo.png, or set
+             LOGO_URL in the Config sheet to any https image. Falls back to the monogram. -->
+        <div class="mark" id="brandMark">
+          <img id="brandLogo" src="assets/kle-logo.png" alt="KLE Technological University"
+               onload="document.getElementById('brandMark').classList.add('has-logo')"
+               onerror="this.remove()" />
+          <span id="brandMono">OSH</span>
+        </div>
+        <div>
+          <div class="brand-name" id="brandName">Old Senate Hall</div>
+          <div class="brand-sub" id="brandSub">KLE-CTIE, Hubballi</div>
+        </div>
+      </div>
+      <nav class="nav" id="nav">
+        <button class="active" data-panel="book">Book the hall</button>
+        <button data-panel="availability">Availability</button>
+        <button data-panel="mine">My bookings</button>
+        <button data-panel="rules">Guidelines</button>
+        <!-- ADMIN BLOCK 1 of 4 — nav entries, hidden until signed in -->
+        <button data-panel="admin" id="adminNav">Console</button>
+        <button data-panel="report" id="reportNav">Report</button>
+        <!-- end ADMIN BLOCK 1 -->
+      </nav>
+      <!-- ADMIN BLOCK 2 of 4 — sign-in / sign-out buttons -->
+      <div class="mode">
+        <button id="adminBtn">Admin</button>
+        <button id="logoutBtn">Sign out</button>
+      </div>
+      <!-- end ADMIN BLOCK 2 -->
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow" id="eyebrow">KLE-CTIE, Hubballi · EE Lab</div>
+        <h1>Old Senate <em>Conference Hall</em></h1>
+        <div class="hero-copy" id="heroCopy">
+          Reserve the hall in three steps — verify your institute email, pick a free slot, and receive a
+          confirmation with the booking reference. Clashes, holidays and changeover time are settled by the
+          server before anything is written.
+        </div>
+        <div class="hero-pills" id="heroPills"></div>
+      </div>
+      <div class="live">
+        <div class="live-label">Hall status</div>
+        <div class="live-value" id="liveStatus"><span class="live-dot"></span>Loading</div>
+        <div class="live-program" id="liveProgram"></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="notice hidden" id="setupNotice"></div>
+    <div class="notice hidden" id="adminNotice"></div>
+
+    <div class="kpis" id="publicKpis"></div>
+
+    <!-- ============================ BOOK ============================ -->
+    <section id="book" class="panel active">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Request a slot</div>
+          <div class="panel-sub" id="bookSub">Email verification is required before the request can be submitted.</div>
+        </div>
+        <span class="duration-badge" id="durationBadge">Duration · 0h 00m</span>
+      </div>
+
+      <form id="bookForm" autocomplete="on">
+        <div class="form-grid">
+          <label class="span3">Full name
+            <input class="field" name="name" required minlength="3" maxlength="80" placeholder="As it should appear on the register" />
+          </label>
+          <label class="span3">Department
+            <select class="field" name="dept" id="deptSelect" required></select>
+          </label>
+
+          <label class="span3">Mobile number
+            <input class="field" name="phone" required inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10 digits" />
+            <span class="hintline">Used only by the caretaker on the day of the meeting.</span>
+          </label>
+
+          <label class="span3">Institute email
+            <div class="otp-row">
+              <input class="field" type="email" name="email" id="email" required placeholder="you@kletech.ac.in" />
+              <button class="ghost" type="button" id="sendOtpBtn">Send OTP</button>
+            </div>
+            <span class="hintline" id="emailHint"></span>
+          </label>
+
+          <label class="span3">Verification code
+            <div class="otp-row">
+              <input class="field otp-code" id="otpInput" inputmode="numeric" maxlength="6" placeholder="6 digits" disabled />
+              <button class="ghost" type="button" id="verifyOtpBtn" disabled>Verify</button>
+            </div>
+            <span class="hintline" id="otpHint">Request a code to unlock the form.</span>
+          </label>
+
+          <label class="span3">Date
+            <input class="field" type="date" name="date" id="dateInput" required />
+            <span class="hintline" id="dateHint"></span>
+          </label>
+
+          <label class="span3">Start time
+            <input class="field" type="time" name="startTime" id="startTime" required />
+          </label>
+          <label class="span3">End time
+            <input class="field" type="time" name="endTime" id="endTime" required />
+            <span class="hintline" id="timeHint"></span>
+          </label>
+
+          <label class="span4">Purpose of the meeting
+            <input class="field" name="purpose" required minlength="5" maxlength="180" placeholder="e.g. Board of Studies review" />
+          </label>
+          <label class="span2">Attendees
+            <input class="field" type="number" name="attendees" id="attendees" required min="1" placeholder="Head count" />
+            <span class="hintline" id="attendeesHint"></span>
+          </label>
+
+          <div class="span6">
+            <label style="gap:8px">Support required
+              <div class="radio-wrap" id="supportWrap"></div>
+            </label>
+          </div>
+
+          <div class="span6" id="slotPreview"></div>
+        </div>
+
+        <div class="form-actions">
+          <button class="primary" type="submit" id="submitBtn" disabled>Verify email to submit</button>
+          <button class="ghost" type="button" id="checkSlotBtn">Check this slot</button>
+          <span class="hintline" id="formHint"></span>
+        </div>
+      </form>
+    </section>
+
+    <!-- ======================== AVAILABILITY ======================== -->
+    <section id="availability" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Availability</div>
+          <div class="panel-sub">Occupied blocks, mandatory changeover gaps and the windows still open.</div>
+        </div>
+        <button class="ghost" data-action="refresh">Refresh</button>
+      </div>
+      <div class="toolbar">
+        <input class="field" type="date" id="availDate" />
+        <button class="ghost" id="availPrev">&#8592; Previous day</button>
+        <button class="ghost" id="availNext">Next day &#8594;</button>
+        <span class="hint" id="availSummary"></span>
+      </div>
+      <div class="timeline-wrap" id="timelineWrap"></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Time</th><th>Department</th><th>Purpose</th><th>Attendees</th><th>Status</th></tr></thead>
+          <tbody id="availRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================= MY BOOKINGS ======================== -->
+    <section id="mine" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">My bookings</div>
+          <div class="panel-sub">Verify your email to list and cancel your own requests.</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <input class="field search" type="email" id="mineEmail" placeholder="you@kletech.ac.in" />
+        <button class="ghost" id="mineOtpBtn">Send OTP</button>
+        <input class="field otp-code" id="mineOtp" maxlength="6" placeholder="6 digits" style="max-width:150px" disabled />
+        <button class="primary" id="mineVerifyBtn" disabled>Show my bookings</button>
+        <span class="hintline" id="mineHint">A one-time code proves the email is yours.</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Reference</th><th>Date</th><th>Time</th><th>Purpose</th><th>Status</th><th></th></tr></thead>
+          <tbody id="mineRows"><tr><td colspan="6" class="empty">Verify your email to continue.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================= GUIDELINES ========================= -->
+    <section id="rules" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Guidelines</div>
+          <div class="panel-sub">Every rule below is enforced server-side, so a request that breaks one is refused.</div>
+        </div>
+      </div>
+      <div class="rules" id="rulesWrap"></div>
+    </section>
+
+    <!-- ADMIN BLOCK 4 of 4 — the console and the printable report -->
+    <!-- ========================== CONSOLE =========================== -->
+    <section id="admin" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Administration console</div>
+          <div class="panel-sub" id="adminSub">Live KPIs for the current month, drawn from the Bookings sheet.</div>
+        </div>
+        <div class="row-actions">
+          <button class="ghost" data-action="refresh">Refresh</button>
+          <button class="ghost" data-action="csv">Export CSV</button>
+          <button class="primary" data-action="report">Open report</button>
+        </div>
+      </div>
+
+      <div class="kpis" id="adminKpis" style="padding:18px;margin:0"></div>
+      <div class="chart-grid" id="adminCharts"></div>
+
+      <div class="toolbar">
+        <input class="field search" id="adminSearch" placeholder="Search reference, name, email, department, purpose" />
+        <select class="field" id="adminStatus"><option value="">All statuses</option></select>
+        <select class="field" id="adminRange">
+          <option value="upcoming">Upcoming</option>
+          <option value="today">Today</option>
+          <option value="week">Next 7 days</option>
+          <option value="month">This month</option>
+          <option value="past">Past</option>
+          <option value="all">Everything</option>
+        </select>
+        <span class="hint" id="adminCount"></span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Reference</th><th>Date</th><th>Time</th><th>Requester</th><th>Department</th><th>Purpose</th><th>Support</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="adminRows"></tbody>
+        </table>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-block">
+          <h3>Closed dates</h3>
+          <div class="chart-body">
+            <div class="row-actions">
+              <input class="field" type="date" id="holDate" style="flex:1;min-width:130px" />
+              <input class="field" id="holName" placeholder="Occasion" style="flex:2;min-width:130px" />
+              <select class="field" id="holType">
+                <option>Holiday</option><option>Blackout</option><option>Maintenance</option>
+              </select>
+              <button class="primary" id="holAdd">Block</button>
+            </div>
+            <div class="chips" id="holChips"></div>
+          </div>
+        </div>
+
+        <div class="chart-block">
+          <h3>Settings</h3>
+          <div class="chart-body">
+            <div class="row-actions">
+              <select class="field" id="setKey" style="flex:2;min-width:180px"></select>
+              <input class="field" id="setValue" placeholder="Value" style="flex:2;min-width:140px" />
+              <button class="primary" id="setSave">Save</button>
+            </div>
+            <div class="hintline" id="setHint"></div>
+            <div class="hintline">Passwords are not settings — rotate them with <span class="mono">setAdminPassword()</span> in the Apps Script editor.</div>
+          </div>
+        </div>
+
+        <div class="chart-block">
+          <h3>Recent activity</h3>
+          <div class="chart-body" id="auditList" style="max-height:260px;overflow:auto"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================== REPORT =========================== -->
+    <section id="report" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Monthly report</div>
+          <div class="panel-sub">Print-ready summary generated from live sheet data.</div>
+        </div>
+        <div class="row-actions">
+          <button class="ghost" data-action="refresh">Refresh data</button>
+          <button class="primary" data-action="print">Print / Save as PDF</button>
+        </div>
+      </div>
+      <div class="pdf-report" id="pdfReport"></div>
+    </section>
+    <!-- end ADMIN BLOCK 4 -->
+  </main>
+
+  <footer class="footer">
+    <span>Made with</span>
+    <span class="heart">&#10084;</span>
+    <span>~rhc</span>
+    <span class="sep">·</span>
+    <span>EE Lab, KLE-CTIE</span>
+    <span class="sep">·</span>
+    <span>Last updated <span id="footerUpdated">--</span></span>
+  </footer>
+
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+  <dialog id="promptDialog">
+    <form method="dialog" id="promptForm">
+      <div class="modal-head">
+        <div class="modal-title" id="promptTitle">Confirm</div>
+        <button class="icon-btn" value="cancel" aria-label="Close" type="submit">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <p id="promptBody"></p>
+        <label id="promptFieldWrap">Note
+          <input class="field" id="promptField" maxlength="180" />
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" value="cancel" type="submit">Cancel</button>
+        <button class="primary" id="promptOk" value="ok" type="submit">Continue</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="detailDialog">
+    <div class="modal-head">
+      <div class="modal-title" id="detailTitle">Booking</div>
+      <button class="icon-btn" aria-label="Close" onclick="document.getElementById('detailDialog').close()">&#10005;</button>
+    </div>
+    <div class="modal-body"><dl class="kv" id="detailBody"></dl></div>
+    <div class="modal-actions">
+      <button class="ghost" onclick="document.getElementById('detailDialog').close()">Close</button>
+    </div>
+  </dialog>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* =============================== state =============================== */
+    const state = {
+      config: null, status: null, publicKpis: null, holidays: [], availability: null,
+      admin: null, token: "", adminOn: false,
+      bookToken: "", bookEmail: "",
+      mineToken: "", mineEmail: "", mine: [],
+      panel: "book", demo: false
+    };
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
+    /** Bind only if the element exists, so deleting the admin blocks cannot break the page. */
+    const on = (sel, evt, fn) => { const el = $(sel); if (el) el.addEventListener(evt, fn); };
+    const esc = (v) => String(v === null || v === undefined ? "" : v)
+      .replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[ch]));
+    const norm = (v) => String(v === null || v === undefined ? "" : v).toLowerCase().trim();
+    const num = (v) => (v === null || v === undefined || v === "" ? 0 : Number(v));
+
+    const toMin = (hhmm) => {
+      const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || ""));
+      return m ? (+m[1]) * 60 + (+m[2]) : -1;
+    };
+    const toHHMM = (mins) => String(Math.floor(mins / 60)).padStart(2, "0") + ":" + String(mins % 60).padStart(2, "0");
+    const hm = (mins) => Math.floor(mins / 60) + "h " + String(mins % 60).padStart(2, "0") + "m";
+    const isoToday = () => {
+      const d = new Date();
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    };
+    const shiftIso = (iso, days) => {
+      const p = iso.split("-");
+      const d = new Date(+p[0], +p[1] - 1, +p[2]);
+      d.setDate(d.getDate() + days);
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    };
+    const nowMin = () => new Date().getHours() * 60 + new Date().getMinutes();
+
+    /* ================================ api ================================ */
+    const inGas = !!(window.google && window.google.script && window.google.script.run);
+    const configured = inGas || (GAS_URL && GAS_URL.indexOf("/exec") > 0);
+
+    function api(action, payload) {
+      const req = Object.assign({ action: action }, payload || {});
+      if (state.token) req.token = state.token;
+
+      if (inGas) {
+        return new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler((e) => reject(new Error((e && e.message) || String(e))))
+            .apiAction(req);
+        });
+      }
+      if (!configured) return Promise.reject(new Error("BACKEND_NOT_CONFIGURED"));
+
+      /* text/plain keeps this a "simple" CORS request, so Apps Script answers it. */
+      return fetch(GAS_URL, {
+        method: "POST",
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(req)
+      }).then((res) => {
+        if (!res.ok) throw new Error("The booking service returned HTTP " + res.status + ". Re-deploy the web app and refresh.");
+        return res.json();
+      });
+    }
+
+    async function call(action, payload) {
+      let data;
+      try {
+        data = await api(action, payload);
+      } catch (err) {
+        if (err.message === "BACKEND_NOT_CONFIGURED") {
+          const friendly = new Error("This page is not connected to the booking service yet, so nothing can be saved. " +
+            "The portal owner needs to deploy the Apps Script web app and set GAS_URL.");
+          friendly.code = "NOT_CONFIGURED";
+          throw friendly;
+        }
+        throw err;
+      }
+      if (!data || data.ok !== true) throw new Error((data && data.error) || "The request could not be completed.");
+      return data;
+    }
+
+    /* =============================== toasts =============================== */
+    function toast(title, body, type) {
+      const el = document.createElement("div");
+      el.className = "toast " + (type || "info");
+      el.innerHTML = '<div class="toast-title">' + esc(title) + "</div>" +
+        '<div class="toast-body">' + esc(body) + "</div>";
+      $("#toastWrap").appendChild(el);
+      setTimeout(() => el.remove(), type === "error" ? 7000 : 4600);
+    }
+
+    function ask(title, body, withNote, okLabel) {
+      return new Promise((resolve) => {
+        $("#promptTitle").textContent = title;
+        $("#promptBody").textContent = body;
+        $("#promptFieldWrap").style.display = withNote ? "grid" : "none";
+        $("#promptField").value = "";
+        $("#promptOk").textContent = okLabel || "Continue";
+        const dlg = $("#promptDialog");
+        const done = (evt) => {
+          dlg.removeEventListener("close", done);
+          resolve(dlg.returnValue === "ok" ? { ok: true, note: $("#promptField").value } : { ok: false });
+        };
+        dlg.addEventListener("close", done);
+        dlg.showModal();
+      });
+    }
+
+    /* ================================ boot ================================ */
+    async function boot() {
+      try {
+        const data = await call("getPortalData", { date: isoToday() });
+        applyPortal(data);
+      } catch (err) {
+        if (err.code === "NOT_CONFIGURED") {
+          state.demo = true;
+          applyPortal(demoPortal());
+          showSetupNotice();
+        } else {
+          applyPortal(demoPortal());
+          state.demo = true;
+          showSetupNotice(err.message);
+          toast("Could not reach the booking service", err.message, "error");
+        }
+      } finally {
+        $("#loading").classList.add("hidden");
+        /* A bookmarked console URL lands straight on the password prompt. */
+        if (consoleRequested() && $("#loginScreen")) showLogin(true);
+      }
+    }
+
+    function showSetupNotice(extra) {
+      const el = $("#setupNotice");
+      el.classList.remove("hidden");
+      el.innerHTML = "<b>Preview mode.</b> This page is showing sample data because it is not connected to the " +
+        "Apps Script backend yet. Deploy <span class='mono'>Code.gs</span> as a web app " +
+        "(Execute as: <i>Me</i> · Access: <i>Anyone</i>) and paste the <span class='mono'>/exec</span> URL into " +
+        "<span class='mono'>GAS_URL</span> at the top of this file." + (extra ? "<br><b>Details:</b> " + esc(extra) : "");
+    }
+
+    function applyPortal(data) {
+      state.config = data.config;
+      state.status = data.status;
+      state.publicKpis = data.publicKpis;
+      state.holidays = data.holidays || [];
+      state.availability = data.availability;
+
+      const c = state.config;
+      $("#brandName").textContent = c.hallName;
+      $("#brandSub").textContent = c.campus;
+      $("#eyebrow").textContent = c.campus + " · EE Lab";
+      $("#footerUpdated").textContent = c.lastUpdated || "--";
+      document.title = c.hallName + " Booking · KLE-CTIE";
+      applyLogo(c.logoUrl);
+      applyHeroArt(c.heroImageUrl);
+
+      $("#heroPills").innerHTML = [
+        "Mon–Fri " + c.openWeekday + "–" + c.closeWeekday,
+        "Sat " + c.openSaturday + "–" + c.closeSaturday,
+        c.buffer + " min changeover",
+        "Seats " + c.maxAttendees,
+        c.autoApprove ? "Instant confirmation" : "Admin approval"
+      ].map((t) => '<span class="hero-pill">' + esc(t) + "</span>").join("");
+
+      if (c.notice) {
+        const n = $("#adminNotice");
+        n.classList.remove("hidden");
+        n.innerHTML = "<b>Notice.</b> " + esc(c.notice);
+      }
+
+      renderLive();
+      renderPublicKpis();
+      renderFormOptions();
+      renderRules();
+      renderAvailability(state.availability);
+    }
+
+    /**
+     * Hero backdrop: generated line-art of a senate hall (colonnade, dais,
+     * chandeliers, seating arcs) in the portal's gold. Kept as inline SVG so the
+     * published page needs no image hosting. Override it any time by setting
+     * HERO_IMAGE_URL in the Config sheet to a real photograph of the hall.
+     */
+    function heroArt() {
+      const svg =
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 520' width='1000' height='520'>" +
+        "<g fill='none' stroke='#c9a84c' stroke-linecap='round' stroke-linejoin='round'>" +
+        /* floor + plinth */
+        "<g opacity='0.30' stroke-width='1.6'>" +
+          "<path d='M40 452 H960'/><path d='M96 452 V236'/><path d='M904 452 V236'/>" +
+        "</g>" +
+        /* colonnade: five arches */
+        "<g opacity='0.34' stroke-width='1.7'>" +
+          "<path d='M150 452 V262 a34 34 0 0 1 68 0 V452'/>" +
+          "<path d='M262 452 V262 a34 34 0 0 1 68 0 V452'/>" +
+          "<path d='M374 452 V262 a34 34 0 0 1 68 0 V452'/>" +
+          "<path d='M654 452 V262 a34 34 0 0 1 68 0 V452'/>" +
+          "<path d='M766 452 V262 a34 34 0 0 1 68 0 V452'/>" +
+        "</g>" +
+        /* column capitals */
+        "<g opacity='0.22' stroke-width='4'>" +
+          "<path d='M146 258 H222'/><path d='M258 258 H334'/><path d='M370 258 H446'/>" +
+          "<path d='M650 258 H726'/><path d='M762 258 H838'/>" +
+        "</g>" +
+        /* central bay: tall window with fanlight */
+        "<g opacity='0.40' stroke-width='1.8'>" +
+          "<path d='M470 452 V196 a60 60 0 0 1 120 0 V452'/>" +
+          "<path d='M470 236 H590'/><path d='M530 196 V236'/>" +
+          "<path d='M498 208 a34 34 0 0 1 64 0'/>" +
+        "</g>" +
+        /* dais + lectern */
+        "<g opacity='0.42' stroke-width='1.8'>" +
+          "<path d='M446 452 H614'/><path d='M456 452 V424 H604 V452'/>" +
+          "<path d='M520 424 V386 M508 386 H556 M540 386 V368 M524 368 H556'/>" +
+        "</g>" +
+        /* chandeliers */
+        "<g opacity='0.34' stroke-width='1.5'>" +
+          "<path d='M320 96 V136'/><circle cx='320' cy='152' r='17'/><circle cx='320' cy='152' r='7'/>" +
+          "<path d='M303 152 V166 M337 152 V166 M320 169 V180'/>" +
+          "<path d='M712 96 V128'/><circle cx='712' cy='142' r='13'/><circle cx='712' cy='142' r='5'/>" +
+          "<path d='M699 142 V154 M725 142 V154'/>" +
+        "</g>" +
+        /* seating arcs */
+        "<g opacity='0.20' stroke-width='1.5'>" +
+          "<path d='M180 486 q320 -34 700 0'/>" +
+          "<path d='M150 508 q350 -36 760 0'/>" +
+        "</g>" +
+        /* cornice */
+        "<g opacity='0.16' stroke-width='2'>" +
+          "<path d='M60 176 H940'/><path d='M76 160 H924'/>" +
+        "</g>" +
+        "</g></svg>";
+      return "url(\"data:image/svg+xml," + encodeURIComponent(svg).replace(/'/g, "%27") + "\")";
+    }
+
+    /** Point the top-left mark at the KLE logo; keep the monogram if it will not load. */
+    function applyLogo(url) {
+      const clean = String(url || "").trim();
+      if (!clean) return;
+      const mark = $("#brandMark");
+      let img = $("#brandLogo");
+      if (!img) {
+        img = document.createElement("img");
+        img.id = "brandLogo";
+        img.alt = "KLE Technological University";
+        img.onload = () => mark.classList.add("has-logo");
+        img.onerror = () => { img.remove(); mark.classList.remove("has-logo"); };
+        mark.insertBefore(img, mark.firstChild);
+      }
+      if (img.getAttribute("src") !== clean) img.setAttribute("src", clean);
+      state.logoUrl = clean;
+    }
+
+    function applyHeroArt(url) {
+      const hero = document.querySelector(".hero");
+      hero.style.setProperty("--hero-art", heroArt());
+      const clean = String(url || "").trim();
+      if (clean) hero.style.setProperty("--hero-image", 'url("' + clean.replace(/"/g, "%22") + '")');
+      else hero.style.removeProperty("--hero-image");
+    }
+
+    function renderLive() {
+      const s = state.status, c = state.config;
+      const open = s.isOpenNow;
+      let label;
+      if (s.closed) label = "Closed today · " + esc(s.reason);
+      else if (open) label = "Open now · " + esc(s.open) + "–" + esc(s.close);
+      else if (nowMin() < toMin(s.open)) label = "Opens at " + esc(s.open) + " · until " + esc(s.close);
+      else label = "Closed for the day · hours " + esc(s.open) + "–" + esc(s.close);
+      $("#liveStatus").innerHTML = '<span class="live-dot' + (open ? "" : " shut") + '"></span>' + label;
+      const bits = [];
+      bits.push("<div><b>" + esc(s.datePretty) + "</b> · " + esc(c.campus) + "</div>");
+      if (s.live) bits.push("<div><b>In session</b> " + esc(s.live.start) + "–" + esc(s.live.end) + " · " + esc(s.live.dept) + "</div>");
+      if (s.next) bits.push("<div><b>Up next</b> " + esc(s.next.start) + "–" + esc(s.next.end) + " · " + esc(s.next.dept) + "</div>");
+      if (!s.live && !s.next && !s.closed) bits.push("<div><b>No meetings</b> scheduled for the rest of today</div>");
+      const nf = state.publicKpis && state.publicKpis.nextFree;
+      if (nf) bits.push("<div><b>Next free</b> " + esc(nf.datePretty) + " from " + esc(nf.start) + "</div>");
+      bits.push("<div><b>Server time</b> " + esc(c.serverTime) + " IST</div>");
+      $("#liveProgram").innerHTML = bits.join("");
+    }
+
+    function kpiCard(label, value, sub, accent, suffix) {
+      /* "%" hugs the number; word-ish suffixes get a thin space. */
+      const tail = suffix ? "<small>" + (suffix === "%" ? "" : " ") + esc(suffix) + "</small>" : "";
+      return '<div class="kpi" style="--accent:' + accent + '">' +
+        '<div class="kpi-label">' + esc(label) + "</div>" +
+        '<div class="kpi-value">' + esc(value) + tail + "</div>" +
+        '<div class="kpi-sub">' + esc(sub) + "</div></div>";
+    }
+
+    function renderPublicKpis() {
+      const k = state.publicKpis, s = state.status;
+      $("#publicKpis").innerHTML = [
+        kpiCard("Today", k.todayBookings, s.closed ? "Hall closed today" : "meetings on the register", "var(--blue)"),
+        kpiCard("Free today", k.todayFreeHours, "bookable hours left", "var(--green)", "h"),
+        kpiCard("This week", k.week, "confirmed in the next 7 days", "var(--violet)"),
+        kpiCard("Next free slot", k.nextFree ? k.nextFree.start : "--",
+          k.nextFree ? k.nextFree.datePretty : "nothing open in 3 weeks", "var(--gold)")
+      ].join("");
+    }
+
+    /* ============================ booking form ============================ */
+    function renderFormOptions() {
+      const c = state.config;
+      $("#deptSelect").innerHTML = '<option value="" disabled selected>Select department</option>' +
+        c.departments.map((d) => "<option>" + esc(d) + "</option>").join("");
+      $("#supportWrap").innerHTML = c.supportOptions.map((o, i) =>
+        '<label class="radio-chip"><input type="radio" name="support" value="' + esc(o) + '"' +
+        (i === 0 ? " checked" : "") + " /> " + esc(o) + "</label>").join("");
+
+      const dateEl = $("#dateInput");
+      dateEl.min = c.today;
+      dateEl.max = shiftIso(c.today, c.maxAdvanceDays);
+      $("#dateHint").textContent = "Open up to " + c.maxAdvanceDays + " days ahead.";
+      $("#attendees").max = c.maxAttendees;
+      $("#attendeesHint").textContent = "Capacity " + c.maxAttendees + ".";
+      $("#emailHint").textContent = c.emailDomains.length
+        ? "Institute email required (" + c.emailDomains.map((d) => "@" + d).join(" / ") + ")."
+        : "Any valid email address.";
+      $("#timeHint").textContent = c.minDuration + "–" + (c.maxDuration / 60) + "h, in " + c.slotStep + " minute steps.";
+      $("#bookSub").textContent = "A " + c.buffer + " minute changeover gap is enforced between meetings." +
+        (c.autoApprove ? " Valid requests are confirmed instantly." : " Requests are confirmed after admin approval.");
+
+      const step = c.slotStep * 60;
+      $("#startTime").step = step;
+      $("#endTime").step = step;
+      $("#availDate").min = c.today;
+      $("#availDate").max = shiftIso(c.today, c.maxAdvanceDays);
+      $("#availDate").value = state.availability ? state.availability.date : c.today;
+    }
+
+    function duration() {
+      const s = toMin($("#startTime").value), e = toMin($("#endTime").value);
+      return (s < 0 || e < 0 || e <= s) ? 0 : e - s;
+    }
+
+    function refreshDuration() {
+      const d = duration();
+      $("#durationBadge").textContent = "Duration · " + hm(d);
+      const c = state.config;
+      const hint = $("#timeHint");
+      hint.className = "hintline";
+      if (!d) {
+        hint.textContent = c.minDuration + "–" + (c.maxDuration / 60) + "h, in " + c.slotStep + " minute steps.";
+      } else if (d < c.minDuration) {
+        hint.className = "hintline err";
+        hint.textContent = "Minimum " + c.minDuration + " minutes.";
+      } else if (d > c.maxDuration) {
+        hint.className = "hintline err";
+        hint.textContent = "Maximum " + (c.maxDuration / 60) + " hours.";
+      } else {
+        hint.className = "hintline good";
+        hint.textContent = hm(d) + " requested.";
+      }
+      renderSlotPreview();
+    }
+
+    /** Client-side pre-check. The server repeats all of this authoritatively. */
+    function localCheck() {
+      const c = state.config;
+      const iso = $("#dateInput").value;
+      const s = toMin($("#startTime").value), e = toMin($("#endTime").value);
+      if (!iso || s < 0 || e < 0) return { level: "mute", text: "Pick a date and a time range to see the slot." };
+
+      const av = state.availability;
+      if (!av || av.date !== iso) return { level: "mute", text: "Checking " + iso + "…" };
+      if (av.closed) return { level: "err", text: av.reason };
+      if (e <= s) return { level: "err", text: "End time must be after the start time." };
+
+      const d = e - s;
+      if (d < c.minDuration) return { level: "err", text: "Minimum booking is " + c.minDuration + " minutes." };
+      if (d > c.maxDuration) return { level: "err", text: "Maximum booking is " + (c.maxDuration / 60) + " hours." };
+      if (s % c.slotStep || e % c.slotStep) return { level: "err", text: "Times must sit on " + c.slotStep + " minute steps." };
+
+      const open = toMin(av.open), close = toMin(av.close);
+      if (s < open || e > close) return { level: "err", text: "On " + av.day + " the hall is open " + av.open + "–" + av.close + "." };
+      if (iso === c.today && s < nowMin() + c.minLead) {
+        return { level: "err", text: "Same-day bookings need " + c.minLead + " minutes of notice." };
+      }
+
+      const clash = (av.bookings || []).filter((b) => {
+        const from = toMin(b.start) - av.buffer, to = toMin(b.end) + av.buffer;
+        return s < to && e > from;
+      })[0];
+      if (clash) {
+        return { level: "err", text: "Clashes with " + clash.start + "–" + clash.end + " (" + clash.dept + ") once the " +
+          av.buffer + " minute changeover gap is applied. Open: " +
+          ((av.free || []).map((w) => w.start + "–" + w.end).join(", ") || "nothing left on this date") + "." };
+      }
+      return { level: "good", text: "This slot is free — " + hm(d) + " on " + av.datePretty + "." };
+    }
+
+    function renderSlotPreview() {
+      const r = localCheck();
+      const colors = { good: "var(--green)", err: "var(--red)", mute: "var(--muted)" };
+      $("#slotPreview").innerHTML =
+        '<div style="border:1px solid var(--line);border-left:4px solid ' + colors[r.level] +
+        ';border-radius:8px;padding:11px 13px;background:#fbfcfd;font-size:13px;color:' + colors[r.level] + '">' +
+        esc(r.text) + "</div>";
+      return r;
+    }
+
+    async function loadAvailability(iso, quiet) {
+      try {
+        const data = await call("getAvailability", { date: iso });
+        state.availability = data;
+        renderAvailability(data);
+        if ($("#availDate").value !== iso) $("#availDate").value = iso;
+        renderSlotPreview();
+      } catch (err) {
+        if (!quiet) toast("Availability unavailable", err.message, "error");
+      }
+    }
+
+    function renderAvailability(av) {
+      if (!av) return;
+      const wrap = $("#timelineWrap");
+      $("#availSummary").textContent = av.datePretty + " · " + av.day +
+        (av.closed ? " · CLOSED (" + av.reason + ")" : " · open " + av.open + "–" + av.close +
+          " · " + (av.bookings || []).length + " booked · " + (av.free || []).length + " free window(s)");
+
+      if (av.closed) {
+        wrap.innerHTML = '<div class="empty">' + esc(av.reason) + " No bookings are accepted on this date.</div>";
+        $("#availRows").innerHTML = '<tr><td colspan="5" class="empty">Hall closed.</td></tr>';
+        return;
+      }
+
+      const open = toMin(av.open), close = toMin(av.close), span = Math.max(1, close - open);
+      const pct = (m) => ((Math.min(Math.max(m, open), close) - open) / span * 100).toFixed(2) + "%";
+      const width = (a, b) => ((Math.min(b, close) - Math.max(a, open)) / span * 100).toFixed(2) + "%";
+
+      let blocks = (av.free || []).map((w) =>
+        '<div class="tl-free" style="left:' + pct(toMin(w.start)) + ";width:" + width(toMin(w.start), toMin(w.end)) + '"></div>').join("");
+
+      blocks += (av.bookings || []).map((b) => {
+        const s = toMin(b.start), e = toMin(b.end);
+        const bs = Math.max(open, s - av.buffer), be = Math.min(close, e + av.buffer);
+        return '<div class="tl-buffer" style="left:' + pct(bs) + ";width:" + width(bs, be) + '"></div>' +
+          '<div class="tl-book' + (norm(b.status) === "pending" ? " pending" : "") + '" style="left:' + pct(s) +
+          ";width:" + width(s, e) + '" title="' + esc(b.start + "–" + b.end + " · " + b.dept + " · " + b.purpose) + '">' +
+          esc(b.dept) + "</div>";
+      }).join("");
+
+      if (av.date === state.config.today && nowMin() > open && nowMin() < close) {
+        blocks += '<div class="tl-now" style="left:' + pct(nowMin()) + '" title="now"></div>';
+      }
+
+      const ticks = [];
+      for (let m = open; m <= close; m += 60) ticks.push("<span>" + toHHMM(m) + "</span>");
+
+      wrap.innerHTML =
+        '<div class="timeline">' + blocks + "</div>" +
+        '<div class="tl-axis">' + ticks.join("") + "</div>" +
+        '<div class="legend">' +
+          '<span><i class="swatch" style="background:var(--navy)"></i>Booked</span>' +
+          '<span><i class="swatch" style="background:repeating-linear-gradient(45deg,rgba(201,168,76,.55) 0 4px,rgba(201,168,76,.15) 4px 8px)"></i>' + av.buffer + ' min changeover</span>' +
+          '<span><i class="swatch" style="background:rgba(31,122,77,.25)"></i>Open</span>' +
+          '<span><i class="swatch" style="background:var(--red)"></i>Now</span>' +
+        "</div>" +
+        '<div class="chips">' + ((av.free || []).length
+          ? av.free.map((w) => '<span class="chip"><button type="button" data-slot="' + esc(w.start + "|" + w.end + "|" + av.date) +
+              '">' + esc(w.start + " – " + w.end) + " &#8599;</button></span>").join("")
+          : '<span class="chip mute">No window long enough is left on this date</span>') + "</div>";
+
+      $("#availRows").innerHTML = (av.bookings || []).length
+        ? av.bookings.map((b) => "<tr><td class='mono'>" + esc(b.start + "–" + b.end) + "</td><td>" + esc(b.dept) +
+            "</td><td>" + esc(b.purpose) + "</td><td>" + esc(b.attendees) + "</td><td>" + statusPill(b.status) + "</td></tr>").join("")
+        : '<tr><td colspan="5" class="empty">The hall is free all day.</td></tr>';
+    }
+
+    function statusPill(status) {
+      const cls = { confirmed: "", pending: "pending", cancelled: "cancelled", completed: "completed", "no-show": "noshow" };
+      return '<span class="status ' + (cls[norm(status)] === undefined ? "" : cls[norm(status)]) + '">' + esc(status) + "</span>";
+    }
+
+    /* ================================ OTP ================================ */
+    async function sendOtp(purpose, emailEl, btn, hintEl, codeEl, verifyBtn) {
+      const email = emailEl.value.trim();
+      if (!email) { hintEl.className = "hintline err"; hintEl.textContent = "Enter your email first."; return; }
+      btn.disabled = true;
+      const label = btn.textContent;
+      btn.textContent = "Sending…";
+      try {
+        const res = await call("sendOtp", { email: email, purpose: purpose });
+        hintEl.className = "hintline good";
+        hintEl.textContent = res.message;
+        codeEl.disabled = false;
+        codeEl.focus();
+        if (verifyBtn) verifyBtn.disabled = false;
+        btn.textContent = "Resend";
+        toast("Code sent", res.message, "success");
+      } catch (err) {
+        hintEl.className = "hintline err";
+        hintEl.textContent = err.message;
+        btn.textContent = label;
+        toast("OTP not sent", err.message, "error");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function verifyBookOtp() {
+      const email = $("#email").value.trim();
+      const otp = $("#otpInput").value.trim();
+      const hint = $("#otpHint");
+      if (otp.length !== 6) { hint.className = "hintline err"; hint.textContent = "Enter the 6 digit code."; return; }
+      $("#verifyOtpBtn").disabled = true;
+      try {
+        const res = await call("verifyOtp", { email: email, otp: otp, purpose: "book" });
+        state.bookToken = res.token;
+        state.bookEmail = email;
+        $("#otpInput").classList.add("verified");
+        $("#otpInput").disabled = true;
+        $("#email").readOnly = true;
+        hint.className = "hintline good";
+        hint.textContent = "Email verified. You can submit the request.";
+        $("#submitBtn").disabled = false;
+        $("#submitBtn").textContent = "Submit booking request";
+        toast("Verified", "Your email is confirmed for the next 30 minutes.", "success");
+      } catch (err) {
+        hint.className = "hintline err";
+        hint.textContent = err.message;
+        $("#verifyOtpBtn").disabled = false;
+      }
+    }
+
+    function resetVerification() {
+      state.bookToken = "";
+      state.bookEmail = "";
+      $("#otpInput").value = "";
+      $("#otpInput").disabled = true;
+      $("#otpInput").classList.remove("verified");
+      $("#email").readOnly = false;
+      $("#verifyOtpBtn").disabled = true;
+      $("#submitBtn").disabled = true;
+      $("#submitBtn").textContent = "Verify email to submit";
+      $("#sendOtpBtn").textContent = "Send OTP";
+      $("#otpHint").className = "hintline";
+      $("#otpHint").textContent = "Request a code to unlock the form.";
+    }
+
+    /* ============================== submit ============================== */
+    async function submitBooking(evt) {
+      evt.preventDefault();
+      const form = $("#bookForm");
+      if (!form.reportValidity()) return;
+
+      const pre = renderSlotPreview();
+      if (pre.level === "err") { toast("Fix the slot first", pre.text, "error"); return; }
+      if (!state.bookToken) { toast("Verify your email", "Request an OTP and verify it before submitting.", "error"); return; }
+
+      const fd = new FormData(form);
+      const payload = {
+        token: state.bookToken,
+        name: fd.get("name"), email: state.bookEmail, phone: fd.get("phone"),
+        dept: fd.get("dept"), purpose: fd.get("purpose"), attendees: fd.get("attendees"),
+        support: fd.get("support"), date: fd.get("date"),
+        startTime: fd.get("startTime"), endTime: fd.get("endTime")
+      };
+
+      const btn = $("#submitBtn");
+      btn.disabled = true;
+      btn.textContent = "Submitting…";
+      try {
+        const res = await call("createBooking", payload);
+        toast("Booking recorded", res.message, "success");
+        showDetail("Booking " + res.booking.id, res.booking);
+        form.reset();
+        resetVerification();
+        $("#durationBadge").textContent = "Duration · 0h 00m";
+        await refreshAll();
+      } catch (err) {
+        toast("Not booked", err.message, "error");
+        $("#formHint").className = "hintline err";
+        $("#formHint").textContent = err.message;
+        btn.disabled = false;
+        btn.textContent = "Submit booking request";
+      }
+    }
+
+    function showDetail(title, b) {
+      $("#detailTitle").textContent = title;
+      const rows = [
+        ["Reference", b.id], ["Status", b.status], ["Date", b.datePretty || b.date],
+        ["Time", b.start + " – " + b.end], ["Name", b.name], ["Department", b.dept],
+        ["Purpose", b.purpose], ["Attendees", b.attendees], ["Support", b.support],
+        ["Email", b.email], ["Phone", b.phone], ["Remarks", b.remarks],
+        ["Requested", b.createdAt], ["Last update", b.updatedAt ? b.updatedAt + (b.updatedBy ? " by " + b.updatedBy : "") : ""]
+      ].filter((r) => r[1] !== undefined && r[1] !== "" && r[1] !== null);
+      $("#detailBody").innerHTML = rows.map((r) => "<dt>" + esc(r[0]) + "</dt><dd>" + esc(r[1]) + "</dd>").join("");
+      $("#detailDialog").showModal();
+    }
+
+    /* ============================ my bookings ============================ */
+    async function showMine() {
+      const email = $("#mineEmail").value.trim();
+      const otp = $("#mineOtp").value.trim();
+      try {
+        const v = await call("verifyOtp", { email: email, otp: otp, purpose: "cancel" });
+        state.mineToken = v.token;
+        state.mineEmail = email;
+        const res = await call("myBookings", { email: email, token: v.token });
+        state.mine = res.bookings || [];
+        renderMine();
+        toast("Verified", state.mine.length + " booking(s) found for " + email + ".", "success");
+      } catch (err) {
+        toast("Could not list bookings", err.message, "error");
+      }
+    }
+
+    function renderMine() {
+      $("#mineRows").innerHTML = state.mine.length ? state.mine.map((b) =>
+        "<tr><td class='mono'>" + esc(b.id) + "</td><td>" + esc(b.datePretty) + "</td><td class='mono'>" +
+        esc(b.start + "–" + b.end) + "</td><td>" + esc(b.purpose) + "</td><td>" + statusPill(b.status) + "</td><td>" +
+        '<div class="row-actions">' +
+        (b.cancellable ? '<button class="ghost danger" data-cancel="' + esc(b.id) + '">Cancel</button>' : "") +
+        '<button class="ghost" data-mine-detail="' + esc(b.id) + '">Details</button></div></td></tr>').join("")
+        : '<tr><td colspan="6" class="empty">No bookings found for this email.</td></tr>';
+    }
+
+    async function cancelMine(id) {
+      const b = state.mine.filter((x) => x.id === id)[0];
+      const res = await ask("Cancel booking", "Release " + (b ? b.datePretty + " " + b.start + "–" + b.end : id) +
+        "? The slot becomes available to everyone again.", true, "Cancel booking");
+      if (!res.ok) return;
+      try {
+        const out = await call("cancelBooking", { id: id, email: state.mineEmail, token: state.mineToken, reason: res.note });
+        toast("Cancelled", out.message, "success");
+        const list = await call("myBookings", { email: state.mineEmail, token: state.mineToken });
+        state.mine = list.bookings || [];
+        renderMine();
+        await refreshAll();
+      } catch (err) {
+        toast("Not cancelled", err.message, "error");
+      }
+    }
+
+    /* ============================= guidelines ============================= */
+    function renderRules() {
+      const c = state.config;
+      const card = (title, items) => '<div class="rule-card"><h3>' + esc(title) + "</h3><ul>" +
+        items.map((i) => "<li>" + i + "</li>").join("") + "</ul></div>";
+
+      const closed = c.closedWeekdays.length ? c.closedWeekdays.join(", ") : "none";
+      $("#rulesWrap").innerHTML =
+        card("Opening hours", [
+          "<b>Monday–Friday</b> " + esc(c.openWeekday) + " to " + esc(c.closeWeekday),
+          "<b>Saturday</b> " + esc(c.openSaturday) + " to " + esc(c.closeSaturday),
+          "<b>Closed</b> " + esc(closed) + ", plus every listed holiday",
+          "Times must sit on <b>" + c.slotStep + " minute</b> steps"
+        ]) +
+        card("Slot rules", [
+          "Duration between <b>" + c.minDuration + " minutes</b> and <b>" + (c.maxDuration / 60) + " hours</b>",
+          "A <b>" + c.buffer + " minute changeover gap</b> is reserved before and after every meeting",
+          "Same-day requests need <b>" + c.minLead + " minutes</b> of notice",
+          "Bookable up to <b>" + c.maxAdvanceDays + " days</b> ahead"
+        ]) +
+        card("Who can book", [
+          c.emailDomains.length ? "Institute email only: <b>" + c.emailDomains.map((d) => "@" + esc(d)).join(", ") + "</b>"
+                                : "Any valid email address",
+          "Email ownership is proved by a <b>6 digit OTP</b>",
+          "Capacity <b>" + c.maxAttendees + " attendees</b>",
+          c.autoApprove ? "Valid requests are <b>confirmed instantly</b>" : "Requests wait for <b>admin approval</b>"
+        ]) +
+        card("Upcoming closures", state.holidays.length
+          ? state.holidays.map((h) => "<b>" + esc(h.datePretty) + "</b> — " + esc(h.name) +
+              (h.type !== "Holiday" ? " (" + esc(h.type) + ")" : ""))
+          : ["No closures listed in the coming weeks."]) +
+        card("Cancelling", [
+          "Open <b>My bookings</b>, verify your email and cancel any future slot",
+          "Past meetings cannot be cancelled — contact the caretaker",
+          "The caretaker is notified automatically on every booking and cancellation",
+          "No-shows are recorded by the administrator and are visible in the KPIs"
+        ]);
+    }
+
+    /* =============================== admin =============================== */
+
+    /**
+     * The console is never advertised on the public page. It appears only when the
+     * URL asks for it:  …/index.html#console   ·   #admin   ·   ?admin=1
+     * This is housekeeping, not security — the password is still checked inside
+     * Apps Script and every console action carries a server-side session token.
+     */
+    function consoleRequested() {
+      const hash = String(location.hash || "").replace("#", "").toLowerCase();
+      const query = new URLSearchParams(location.search || "");
+      return hash === "console" || hash === "admin" ||
+             query.has("admin") || query.get("view") === "console";
+    }
+
+    function enableConsoleEntry() {
+      if (!$("#adminBtn")) return;              // admin blocks were removed
+      document.body.classList.add("console-url");
+    }
+
+    function showLogin(show) {
+      if (!$("#loginScreen")) return;
+      $("#loginScreen").classList.toggle("show", show);
+      if (show) {
+        $("#loginPassword").value = "";
+        $("#loginError").textContent = "";
+        setTimeout(() => $("#loginPassword").focus(), 60);
+      }
+    }
+
+    async function adminLogin() {
+      if (!$("#loginPassword")) return;
+      const pw = $("#loginPassword").value;
+      if (!pw) { $("#loginError").textContent = "Enter the password."; return; }
+      const btn = $("#loginSubmit");
+      btn.disabled = true;
+      btn.textContent = "Checking…";
+      try {
+        const data = await call("adminLogin", { password: pw });
+        state.token = data.token;
+        state.adminOn = true;
+        state.admin = data;
+        document.body.classList.add("admin");
+        showLogin(false);
+        renderAdmin();
+        renderReport();
+        openPanel("admin");
+        toast("Signed in", data.message, "success");
+      } catch (err) {
+        $("#loginError").textContent = err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Sign in";
+      }
+    }
+
+    async function adminLogout() {
+      const token = state.token;
+      state.token = "";
+      state.adminOn = false;
+      state.admin = null;
+      document.body.classList.remove("admin");
+      openPanel("book");
+      toast("Signed out", "Console access was cleared on this device.", "info");
+      if (token) { try { await api("adminLogout", { token: token }); } catch (e) { /* best effort */ } }
+    }
+
+    function renderAdmin() {
+      const d = state.admin;
+      if (!d || !$("#adminKpis")) return;
+      const k = d.kpis;
+      $("#adminSub").textContent = "Live KPIs for " + k.monthLabel + " · " + d.bookings.length +
+        " row(s) in the register · sheet last updated " + d.config.lastUpdated;
+
+      $("#adminKpis").innerHTML = [
+        kpiCard("Today", k.todayBookings, "meetings scheduled", "var(--blue)"),
+        kpiCard("Tomorrow", k.tomorrow, "meetings scheduled", "var(--cyan)"),
+        kpiCard("Next 7 days", k.next7, "of " + k.upcomingTotal + " upcoming", "var(--violet)"),
+        kpiCard("Awaiting approval", k.pending, k.pending ? "action needed" : "queue is clear", k.pending ? "var(--red)" : "var(--green)"),
+        kpiCard("Bookings", k.monthBookings, k.monthLabel, "var(--navy)"),
+        kpiCard("Hours booked", k.monthHours, "of " + k.monthCapacity + " capacity hours", "var(--gold)", "h"),
+        kpiCard("Hall utilisation", k.utilisation, "of open hours this month", "var(--green)", "%"),
+        kpiCard("Seat utilisation", k.seatUtilisation, "avg " + k.avgAttendees + " of " + d.config.maxAttendees + " seats", "var(--cyan)", "%"),
+        kpiCard("Avg duration", k.avgDuration, "minutes per meeting", "var(--blue)"),
+        kpiCard("Cancellations", k.cancelled, k.cancelRate + "% of this month's requests", "var(--red)"),
+        kpiCard("No-shows", k.noShow, "recorded this month", "var(--rose)"),
+        kpiCard("Peak slot", k.peakSlot, "busiest hour this month", "var(--violet)"),
+        kpiCard("Departments", k.departments, "top: " + k.topDept + " (" + k.topDeptCount + ")", "var(--gold)"),
+        kpiCard("Avg lead time", k.avgLeadDays, "days between request and meeting", "var(--muted)", "d"),
+        kpiCard("All time", k.totalAllTime, "rows in the register", "var(--navy)")
+      ].join("");
+
+      renderAdminCharts(d.charts);
+      $("#adminStatus").innerHTML = '<option value="">All statuses</option>' +
+        d.statuses.map((s) => "<option>" + esc(s) + "</option>").join("");
+      renderAdminRows();
+      renderHolidayChips();
+      renderSettings();
+      $("#auditList").innerHTML = (d.audit || []).length
+        ? d.audit.map((a) => '<div style="border-bottom:1px solid var(--line);padding:7px 0;font-size:12.5px">' +
+            '<b style="color:var(--navy)">' + esc(a.action) + "</b> " +
+            '<span class="mono" style="color:var(--muted)">' + esc(a.at) + "</span><br>" +
+            '<span style="color:var(--muted)">' + esc(a.actor) + (a.id ? " · " + esc(a.id) : "") +
+            (a.details ? " · " + esc(a.details) : "") + "</span></div>").join("")
+        : '<div class="hintline">No activity recorded yet.</div>';
+    }
+
+    function bars(rows, accent) {
+      if (!rows || !rows.length) return '<div class="hintline">No data for this month yet.</div>';
+      const max = Math.max.apply(null, rows.map((r) => num(r.value)).concat([1]));
+      return rows.map((r) => '<div class="metric-row"><b>' + esc(r.label) + "</b>" +
+        '<div class="metric-track"><div class="metric-fill" style="width:' +
+        (num(r.value) / max * 100).toFixed(1) + "%;background:" + (accent || "var(--gold)") + '"></div></div>' +
+        "<span>" + esc(r.value) + "</span></div>").join("");
+    }
+
+    function columns(rows) {
+      if (!rows || !rows.length) return '<div class="hintline">No data yet.</div>';
+      const max = Math.max.apply(null, rows.map((r) => num(r.value)).concat([1]));
+      return '<div class="columns">' + rows.map((r) => '<div class="column">' +
+        '<div class="num">' + esc(r.value) + "</div>" +
+        '<div class="bar" style="height:' + Math.max(3, num(r.value) / max * 96).toFixed(0) + 'px"></div>' +
+        '<div class="cap">' + esc(r.label) + "</div></div>").join("") + "</div>";
+    }
+
+    function renderAdminCharts(charts) {
+      if (!charts) return;
+      const block = (title, body) => '<div class="chart-block"><h3>' + esc(title) + '</h3><div class="chart-body">' + body + "</div></div>";
+      $("#adminCharts").innerHTML =
+        block("Bookings per week · last 8 weeks", columns(charts.weeks)) +
+        block("Department load · this month", bars(charts.dept, "var(--blue)")) +
+        block("Slot load by start hour", bars(charts.hours, "var(--navy)")) +
+        block("Status mix · this month", bars(charts.status, "var(--violet)")) +
+        block("Support requested · this month", bars(charts.support, "var(--cyan)"));
+    }
+
+    function filteredAdminRows() {
+      const d = state.admin;
+      if (!d) return [];
+      const q = norm($("#adminSearch").value);
+      const status = $("#adminStatus").value;
+      const range = $("#adminRange").value;
+      const today = d.config.today;
+      const week = shiftIso(today, 7);
+      const month = today.slice(0, 7);
+
+      return d.bookings.filter((b) => {
+        if (status && b.status !== status) return false;
+        if (range === "today" && b.date !== today) return false;
+        if (range === "upcoming" && b.date < today) return false;
+        if (range === "week" && (b.date < today || b.date > week)) return false;
+        if (range === "month" && b.date.slice(0, 7) !== month) return false;
+        if (range === "past" && b.date >= today) return false;
+        if (q && norm([b.id, b.name, b.email, b.phone, b.dept, b.purpose, b.support, b.remarks].join(" ")).indexOf(q) < 0) return false;
+        return true;
+      }).sort((a, b) => (range === "past" ? -1 : 1) * (a.date + a.start).localeCompare(b.date + b.start));
+    }
+
+    function renderAdminRows() {
+      const rows = filteredAdminRows();
+      $("#adminCount").textContent = rows.length + " of " + state.admin.bookings.length + " row(s)";
+      const act = (id, status, label, cls) =>
+        '<button class="ghost ' + (cls || "") + '" data-status="' + esc(status) + '" data-id="' + esc(id) + '">' + label + "</button>";
+
+      $("#adminRows").innerHTML = rows.length ? rows.map((b) => {
+        const s = norm(b.status);
+        const buttons = [];
+        if (s === "pending") buttons.push(act(b.id, "Confirmed", "Approve"));
+        if (s === "pending" || s === "confirmed") buttons.push(act(b.id, "Cancelled", "Cancel", "danger"));
+        if (s === "confirmed") { buttons.push(act(b.id, "Completed", "Completed")); buttons.push(act(b.id, "No-show", "No-show")); }
+        buttons.push('<button class="ghost" data-detail="' + esc(b.id) + '">Details</button>');
+        return "<tr><td class='mono'>" + esc(b.id) + "</td><td>" + esc(b.datePretty) + "</td><td class='mono'>" +
+          esc(b.start + "–" + b.end) + "</td><td>" + esc(b.name) + "<br><span class='hintline'>" + esc(b.email) +
+          " · " + esc(b.phone) + "</span></td><td>" + esc(b.dept) + "</td><td>" + esc(b.purpose) +
+          (b.remarks ? "<br><span class='hintline'>" + esc(b.remarks) + "</span>" : "") +
+          "</td><td>" + esc(b.support) + "</td><td>" + statusPill(b.status) + "</td><td><div class='row-actions'>" +
+          buttons.join("") + "</div></td></tr>";
+      }).join("") : '<tr><td colspan="9" class="empty">No rows match this filter.</td></tr>';
+    }
+
+    async function setStatus(id, status) {
+      const b = state.admin.bookings.filter((x) => x.id === id)[0];
+      const needNote = status === "Cancelled" || status === "No-show";
+      const res = await ask("Mark " + status,
+        (b ? b.datePretty + " " + b.start + "–" + b.end + " · " + b.dept + " · " + b.name : id) +
+        (needNote ? " — the requester is informed by email." : ""), needNote, "Mark " + status);
+      if (!res.ok) return;
+      try {
+        const out = await call("setStatus", { id: id, status: status, remarks: res.note });
+        toast("Updated", out.message, "success");
+        await refreshAdmin();
+      } catch (err) {
+        toast("Not updated", err.message, "error");
+      }
+    }
+
+    function renderHolidayChips() {
+      const list = (state.admin.holidays || []).filter((h) => h.date >= state.admin.config.today).slice(0, 24);
+      $("#holChips").innerHTML = list.length ? list.map((h) =>
+        '<span class="chip mute">' + esc(h.datePretty) + " · " + esc(h.name) +
+        (h.type !== "Holiday" ? " (" + esc(h.type) + ")" : "") +
+        '<button type="button" data-unhol="' + esc(h.date) + '" title="Reopen this date">&#10005;</button></span>').join("")
+        : '<div class="hintline">No upcoming closures listed.</div>';
+    }
+
+    async function addHoliday(force) {
+      const date = $("#holDate").value;
+      if (!date) { toast("Pick a date", "Choose the date to block.", "error"); return; }
+      try {
+        const out = await call("addHoliday", {
+          date: date, name: $("#holName").value, type: $("#holType").value, force: !!force
+        });
+        toast("Date blocked", out.message, "success");
+        $("#holDate").value = ""; $("#holName").value = "";
+        await refreshAdmin();
+        await refreshAll();
+      } catch (err) {
+        if (!force && /active booking/i.test(err.message)) {
+          const res = await ask("Block anyway?", err.message, false, "Block anyway");
+          if (res.ok) return addHoliday(true);
+          return;
+        }
+        toast("Not blocked", err.message, "error");
+      }
+    }
+
+    async function removeHoliday(date) {
+      const res = await ask("Reopen date", "Remove " + date + " from the closed list?", false, "Reopen");
+      if (!res.ok) return;
+      try {
+        const out = await call("removeHoliday", { date: date });
+        toast("Reopened", out.message, "success");
+        await refreshAdmin();
+        await refreshAll();
+      } catch (err) {
+        toast("Not changed", err.message, "error");
+      }
+    }
+
+    function renderSettings() {
+      const s = state.admin.settings || [];
+      $("#setKey").innerHTML = s.map((x) => '<option value="' + esc(x.key) + '">' + esc(x.key) + "</option>").join("");
+      syncSettingField();
+    }
+
+    function syncSettingField() {
+      const key = $("#setKey").value;
+      const def = (state.admin.settings || []).filter((x) => x.key === key)[0];
+      if (!def) return;
+      $("#setValue").value = def.value;
+      $("#setHint").textContent = def.description + " (" + def.type + ")";
+    }
+
+    async function saveSetting() {
+      const key = $("#setKey").value;
+      try {
+        const out = await call("setConfig", { key: key, value: $("#setValue").value });
+        toast("Saved", out.message, "success");
+        await refreshAdmin();
+        await refreshAll();
+      } catch (err) {
+        toast("Not saved", err.message, "error");
+      }
+    }
+
+    async function exportCsv() {
+      try {
+        const out = await call("exportCsv", {});
+        const blob = new Blob(["﻿" + out.csv], { type: "text/csv;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = out.filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+        toast("Export ready", out.filename, "success");
+      } catch (err) {
+        toast("Export failed", err.message, "error");
+      }
+    }
+
+    /* =============================== report =============================== */
+    function renderReport() {
+      const d = state.admin;
+      if (!d) { $("#pdfReport").innerHTML = '<div class="empty">Sign in to the console to build the report.</div>'; return; }
+      const k = d.kpis, c = d.config;
+      const today = c.today;
+      const upcoming = d.bookings.filter((b) => b.date >= today && ["Pending", "Confirmed"].indexOf(b.status) >= 0)
+        .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start)).slice(0, 18);
+      const month = d.bookings.filter((b) => b.date.slice(0, 7) === today.slice(0, 7));
+
+      const table = (head, rows) => '<table class="report-table"><thead><tr>' +
+        head.map((h) => "<th>" + esc(h) + "</th>").join("") + "</tr></thead><tbody>" +
+        (rows.length ? rows.map((r) => "<tr>" + r.map((c2) => "<td>" + esc(c2) + "</td>").join("") + "</tr>").join("")
+                     : '<tr><td colspan="' + head.length + '">No records.</td></tr>') + "</tbody></table>";
+
+      $("#pdfReport").innerHTML =
+        '<div class="pdf-cover">' +
+          '<div class="report-logos">' +
+            (state.logoUrl ? '<div class="report-logo" style="background:#fff;padding:6px 10px">' +
+              '<img src="' + esc(state.logoUrl) + '" alt="KLE" style="height:32px;display:block" /></div>' : "") +
+            '<div class="report-logo">KLE-CTIE</div><div class="report-logo">EE LAB</div>' +
+            '<div class="report-logo">HUBBALLI</div></div>' +
+          '<div><div class="report-cover-title">' + esc(c.hallName) + ' <em>utilisation report</em></div>' +
+          '<div class="report-cover-sub">' + esc(k.monthLabel) + " · generated from the live booking register on " +
+          esc(c.serverTime) + " IST. Every figure below is computed server-side from the Bookings sheet.</div></div>" +
+          '<div class="report-cover-sub">Sheet last updated ' + esc(c.lastUpdated) + "</div>" +
+        "</div>" +
+
+        '<div class="report-kpis">' +
+          reportKpi("Bookings", k.monthBookings, k.monthLabel) +
+          reportKpi("Hours booked", k.monthHours + " h", "of " + k.monthCapacity + " h capacity") +
+          reportKpi("Utilisation", k.utilisation + "%", "of open hours") +
+          reportKpi("Cancellations", k.cancelled, k.cancelRate + "% of requests") +
+        "</div>" +
+
+        '<div class="report-section"><div class="report-section-title">Operating summary</div>' +
+          table(["Metric", "Value", "Metric", "Value"], [
+            ["Meetings today", k.todayBookings, "Awaiting approval", k.pending],
+            ["Next 7 days", k.next7, "Upcoming total", k.upcomingTotal],
+            ["Average duration", k.avgDuration + " min", "Average attendees", k.avgAttendees],
+            ["Seat utilisation", k.seatUtilisation + "%", "Average lead time", k.avgLeadDays + " days"],
+            ["Busiest hour", k.peakSlot, "No-shows", k.noShow],
+            ["Departments served", k.departments, "Top department", k.topDept + " (" + k.topDeptCount + ")"]
+          ]) +
+          '<div class="report-note">Capacity assumes ' + esc(c.openWeekday) + "–" + esc(c.closeWeekday) +
+          " on weekdays and " + esc(c.openSaturday) + "–" + esc(c.closeSaturday) +
+          " on Saturdays, excluding closed days and every listed holiday. A " + c.buffer +
+          " minute changeover gap is reserved between meetings and is not counted as booked time.</div></div>" +
+
+        '<div class="report-section"><div class="report-section-title">Department load · ' + esc(k.monthLabel) + "</div>" +
+          table(["Department", "Bookings", "Share"], (d.charts.dept || []).map((r) => [
+            r.label, r.value, (month.length ? Math.round(r.value / month.length * 100) : 0) + "%"
+          ])) + "</div>" +
+
+        '<div class="report-section"><div class="report-section-title">Slot load by start hour</div>' +
+          table(["Window", "Bookings"], (d.charts.hours || []).map((r) => [r.label + " – " + shiftHour(r.label), r.value])) + "</div>" +
+
+        '<div class="report-section"><div class="report-section-title">Upcoming schedule</div>' +
+          table(["Date", "Time", "Department", "Purpose", "Requester", "Attendees", "Status"],
+            upcoming.map((b) => [b.datePretty, b.start + " – " + b.end, b.dept, b.purpose, b.name, b.attendees, b.status])) + "</div>" +
+
+        '<div class="report-section"><div class="report-section-title">Closed dates ahead</div>' +
+          table(["Date", "Occasion", "Type"], (d.holidays || []).filter((h) => h.date >= today).slice(0, 20)
+            .map((h) => [h.datePretty, h.name, h.type])) +
+          '<div class="report-note">Made with &#10084; ~rhc · EE Lab, KLE-CTIE · ' + esc(c.hallName) + " booking portal.</div></div>";
+    }
+
+    function shiftHour(hhmm) {
+      const m = toMin(hhmm);
+      return m < 0 ? "" : toHHMM(m + 60);
+    }
+
+    function reportKpi(label, value, sub) {
+      return '<div class="report-kpi"><div class="report-kpi-label">' + esc(label) + "</div>" +
+        '<div class="report-kpi-value">' + esc(value) + "</div>" +
+        '<div class="report-kpi-label" style="margin-top:6px;text-transform:none;letter-spacing:0">' + esc(sub) + "</div></div>";
+    }
+
+    /* =============================== refresh =============================== */
+    async function refreshAll() {
+      try {
+        const data = await call("getPortalData", { date: $("#availDate").value || isoToday() });
+        applyPortal(data);
+      } catch (err) {
+        if (err.code !== "NOT_CONFIGURED") toast("Refresh failed", err.message, "error");
+      }
+    }
+
+    async function refreshAdmin() {
+      if (!state.token) return;
+      try {
+        state.admin = await call("adminData", {});
+        renderAdmin();
+        renderReport();
+      } catch (err) {
+        toast("Console refresh failed", err.message, "error");
+        if (/session expired/i.test(err.message)) adminLogout();
+      }
+    }
+
+    /* ============================== navigation ============================== */
+    function openPanel(id) {
+      state.panel = id;
+      $$(".panel").forEach((p) => p.classList.toggle("active", p.id === id));
+      $$("#nav button").forEach((b) => b.classList.toggle("active", b.dataset.panel === id));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ================================ events ================================ */
+    document.addEventListener("click", (evt) => {
+      const t = evt.target;
+
+      const nav = t.closest("[data-panel]");
+      if (nav) {
+        const id = nav.dataset.panel;
+        if ((id === "admin" || id === "report") && !state.adminOn) { showLogin(true); return; }
+        openPanel(id);
+        if (id === "availability") loadAvailability($("#availDate").value || isoToday(), true);
+        return;
+      }
+
+      const slot = t.closest("[data-slot]");
+      if (slot) {
+        const parts = slot.dataset.slot.split("|");
+        $("#dateInput").value = parts[2];
+        $("#startTime").value = parts[0];
+        const maxEnd = Math.min(toMin(parts[1]), toMin(parts[0]) + state.config.maxDuration);
+        $("#endTime").value = toHHMM(maxEnd);
+        openPanel("book");
+        loadAvailability(parts[2], true).then(refreshDuration);
+        toast("Slot copied", parts[0] + "–" + toHHMM(maxEnd) + " on " + parts[2] + " is loaded into the form.", "info");
+        return;
+      }
+
+      const cancel = t.closest("[data-cancel]");
+      if (cancel) { cancelMine(cancel.dataset.cancel); return; }
+
+      const mineDetail = t.closest("[data-mine-detail]");
+      if (mineDetail) {
+        const b = state.mine.filter((x) => x.id === mineDetail.dataset.mineDetail)[0];
+        if (b) showDetail("Booking " + b.id, b);
+        return;
+      }
+
+      const status = t.closest("[data-status]");
+      if (status) { setStatus(status.dataset.id, status.dataset.status); return; }
+
+      const detail = t.closest("[data-detail]");
+      if (detail) {
+        const b = state.admin.bookings.filter((x) => x.id === detail.dataset.detail)[0];
+        if (b) showDetail("Booking " + b.id, b);
+        return;
+      }
+
+      const unhol = t.closest("[data-unhol]");
+      if (unhol) { removeHoliday(unhol.dataset.unhol); return; }
+
+      const action = t.closest("[data-action]");
+      if (action) {
+        const a = action.dataset.action;
+        if (a === "refresh") {
+          refreshAll();
+          if (state.token) refreshAdmin();
+          toast("Refreshing", "Pulling the latest data from the sheet.", "info");
+        }
+        if (a === "csv") exportCsv();
+        if (a === "report") { renderReport(); openPanel("report"); }
+        if (a === "print") { renderReport(); setTimeout(() => window.print(), 150); }
+      }
+    });
+
+    $("#sendOtpBtn").addEventListener("click", () =>
+      sendOtp("book", $("#email"), $("#sendOtpBtn"), $("#otpHint"), $("#otpInput"), $("#verifyOtpBtn")));
+    $("#verifyOtpBtn").addEventListener("click", verifyBookOtp);
+    $("#otpInput").addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, "");
+      if (e.target.value.length === 6) verifyBookOtp();
+    });
+    $("#email").addEventListener("input", () => { if (state.bookToken) resetVerification(); });
+    $("#bookForm").addEventListener("submit", submitBooking);
+    $("#checkSlotBtn").addEventListener("click", () => {
+      const iso = $("#dateInput").value;
+      if (!iso) { toast("Pick a date", "Choose the date you want to check.", "info"); return; }
+      loadAvailability(iso).then(() => {
+        const r = renderSlotPreview();
+        toast(r.level === "good" ? "Slot is free" : r.level === "err" ? "Slot not available" : "Checked", r.text,
+          r.level === "good" ? "success" : r.level === "err" ? "error" : "info");
+      });
+    });
+
+    ["startTime", "endTime"].forEach((id) => $("#" + id).addEventListener("change", refreshDuration));
+    $("#dateInput").addEventListener("change", () => {
+      const iso = $("#dateInput").value;
+      if (iso) loadAvailability(iso, true).then(refreshDuration);
+    });
+    $("#attendees").addEventListener("input", (e) => {
+      const max = state.config ? state.config.maxAttendees : 20;
+      const hint = $("#attendeesHint");
+      if (num(e.target.value) > max) { hint.className = "hintline err"; hint.textContent = "Capacity is " + max + "."; }
+      else { hint.className = "hintline"; hint.textContent = "Capacity " + max + "."; }
+    });
+
+    $("#availDate").addEventListener("change", (e) => loadAvailability(e.target.value));
+    $("#availPrev").addEventListener("click", () => loadAvailability(shiftIso($("#availDate").value || isoToday(), -1)));
+    $("#availNext").addEventListener("click", () => loadAvailability(shiftIso($("#availDate").value || isoToday(), 1)));
+
+    $("#mineOtpBtn").addEventListener("click", () =>
+      sendOtp("cancel", $("#mineEmail"), $("#mineOtpBtn"), $("#mineHint"), $("#mineOtp"), $("#mineVerifyBtn")));
+    $("#mineOtp").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, ""); });
+    $("#mineVerifyBtn").addEventListener("click", showMine);
+
+    /* Admin bindings use on() so removing the ADMIN BLOCKs cannot throw. */
+    on("#adminBtn", "click", () => showLogin(true));
+    on("#logoutBtn", "click", adminLogout);
+    on("#loginSubmit", "click", adminLogin);
+    on("#loginCancel", "click", () => showLogin(false));
+    on("#loginPassword", "keydown", (e) => { if (e.key === "Enter") adminLogin(); });
+
+    ["adminSearch", "adminStatus", "adminRange"].forEach((id) =>
+      on("#" + id, "input", () => { if (state.admin) renderAdminRows(); }));
+    on("#holAdd", "click", () => addHoliday(false));
+    on("#setKey", "change", syncSettingField);
+    on("#setSave", "click", saveSetting);
+
+    /* The console entry point appears only for a URL that asks for it, and keeps
+       working if the operator opens …#console after the page has loaded. */
+    if (consoleRequested()) enableConsoleEntry();
+    window.addEventListener("hashchange", () => {
+      if (consoleRequested()) { enableConsoleEntry(); if (!state.adminOn) showLogin(true); }
+    });
+
+    /* ============================== demo payload ============================== */
+    function demoPortal() {
+      const today = isoToday();
+      const pretty = (iso) => {
+        const p = iso.split("-");
+        return p[2] + "-" + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+p[1] - 1] + "-" + p[0];
+      };
+      const config = {
+        hallName: "Old Senate Hall", campus: "KLE-CTIE, Hubballi", notice: "",
+        departments: ["CTIE","CSE","ECE","EEE","Mechanical","Civil","MBA","Administration","Others"],
+        supportOptions: ["Hall Only","Projector & Screen","Audio / Mic System","Seating Rearrangement","Other"],
+        openWeekday: "10:00", closeWeekday: "18:00", openSaturday: "10:00", closeSaturday: "14:00",
+        closedWeekdays: ["Sun"], buffer: 45, minDuration: 30, maxDuration: 240, slotStep: 15,
+        maxAttendees: 20, minLead: 60, maxAdvanceDays: 60, emailDomains: ["kletech.ac.in"],
+        autoApprove: true, lastUpdated: "preview mode", today: today, serverTime: "preview"
+      };
+      const bookings = [
+        { id: "OSH-DEMO-001", start: "11:00", end: "12:00", dept: "CSE", purpose: "Board of Studies review", status: "Confirmed", attendees: 12 },
+        { id: "OSH-DEMO-002", start: "15:00", end: "16:30", dept: "ECE", purpose: "Placement briefing", status: "Confirmed", attendees: 18 }
+      ];
+      const availability = {
+        ok: true, date: today, datePretty: pretty(today), day: "Mon", closed: false, reason: "",
+        open: "10:00", close: "18:00", bookings: bookings,
+        free: [{ start: "12:45", end: "14:15" }, { start: "17:15", end: "18:00" }], buffer: 45
+      };
+      return {
+        ok: true, config: config,
+        status: { date: today, datePretty: pretty(today), closed: false, reason: "", open: "10:00", close: "18:00",
+          isOpenNow: true, live: null, next: { start: "15:00", end: "16:30", dept: "ECE", purpose: "Placement briefing" } },
+        publicKpis: { todayBookings: 2, todayFreeHours: 2.3, week: 5,
+          nextFree: { date: today, datePretty: pretty(today), start: "12:45", end: "14:15" } },
+        holidays: [], availability: availability
+      };
+    }
+
+    /* ================================= go ================================= */
+    boot();
+  })();
+  </script>
+</body>
+</html>
