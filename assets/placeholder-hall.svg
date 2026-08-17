@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 450" width="1050" height="450" role="img"
+     aria-label="Placeholder illustration: the hall seen down the centre aisle">
+  <rect width="1050" height="450" fill="#0d1b3e"/>
+  <g fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round">
+    <!-- perspective floor -->
+    <g opacity="0.16" stroke-width="1.2">
+      <path d="M0 450 L430 250 M1050 450 L620 250 M120 450 L455 250 M930 450 L595 250"/>
+      <path d="M60 400 H990 M170 350 H880 M260 310 H790 M330 278 H720"/>
+    </g>
+    <!-- colonnade left -->
+    <g opacity="0.34" stroke-width="1.7">
+      <path d="M70 420 V210 a26 26 0 0 1 52 0 V420"/>
+      <path d="M170 396 V214 a24 24 0 0 1 48 0 V396"/>
+      <path d="M262 372 V220 a21 21 0 0 1 42 0 V372"/>
+      <path d="M930 420 V210 a26 26 0 0 0 -52 0 V420"/>
+      <path d="M830 396 V214 a24 24 0 0 0 -48 0 V396"/>
+      <path d="M738 372 V220 a21 21 0 0 0 -42 0 V372"/>
+    </g>
+    <g opacity="0.2" stroke-width="4">
+      <path d="M66 206 H126 M166 210 H222 M258 216 H306 M874 206 H934 M778 210 H834 M694 216 H742"/>
+    </g>
+    <!-- central arched window -->
+    <g opacity="0.42" stroke-width="1.8">
+      <path d="M455 300 V172 a70 46 0 0 1 140 0 V300"/>
+      <path d="M455 216 H595 M525 172 V300"/>
+      <path d="M478 196 a48 30 0 0 1 94 0"/>
+    </g>
+    <!-- dais + lectern -->
+    <g opacity="0.44" stroke-width="1.8">
+      <path d="M420 300 H630 M436 300 V282 H614 V300"/>
+      <path d="M520 282 V254 M508 254 H548 M534 254 V238 M518 238 H548"/>
+    </g>
+    <!-- chandeliers -->
+    <g opacity="0.32" stroke-width="1.4">
+      <path d="M300 40 V88"/><circle cx="300" cy="104" r="16"/><circle cx="300" cy="104" r="6"/>
+      <path d="M284 104 V118 M316 104 V118 M300 121 V132"/>
+      <path d="M750 40 V80"/><circle cx="750" cy="94" r="12"/><circle cx="750" cy="94" r="4"/>
+      <path d="M738 94 V106 M762 94 V106"/>
+    </g>
+    <!-- seating rows -->
+    <g opacity="0.2" stroke-width="1.4">
+      <path d="M150 372 q375 -26 750 0"/>
+      <path d="M110 404 q415 -28 830 0"/>
+      <path d="M70 438 q455 -30 910 0"/>
+    </g>
+    <!-- cornice -->
+    <g opacity="0.14" stroke-width="2"><path d="M30 148 H1020 M60 132 H990"/></g>
+  </g>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <text x="34" y="52" fill="#ead282" font-size="13" letter-spacing="2.4">PLACEHOLDER 1 OF 3</text>
+    <text x="34" y="80" fill="#ffffff" font-size="23" font-weight="600">View down the centre aisle</text>
+    <text x="34" y="106" fill="#8fa0c0" font-size="14">Replace via Config &#8594; GALLERY. Shoot landscape, 1600 x 900 or wider.</text>
+  </g>
+</svg>
