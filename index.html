@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Old Senate Hall Booking · KLE-CTIE</title>
-  <meta name="description" content="Booking portal for the Old Senate Hall, KLE-CTIE Hubballi." />
+  <title>Old Senate Hall Booking · KLE-C-SHInE</title>
+  <meta name="description" content="Booking portal for the Old Senate Hall, KLE-C-SHInE Hubballi." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -217,6 +217,55 @@
     .live-program b { color: white; }
 
     main { max-width: 1240px; margin: 0 auto; padding: 20px 18px 56px; }
+
+    /* ---------- venue carousel ---------- */
+    .gallery-band {
+      background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+      box-shadow: var(--shadow); overflow: hidden; margin-bottom: 18px;
+    }
+    .gallery-band.hidden { display: none; }
+    .gallery-head {
+      padding: 15px 18px; display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #fbfaf7);
+    }
+    .gallery-nav { display: flex; gap: 6px; }
+    .gallery-nav button { min-width: 38px; font-size: 15px; line-height: 1; }
+    .gallery {
+      display: flex; gap: 0; overflow-x: auto; scroll-snap-type: x mandatory;
+      scroll-behavior: smooth; scrollbar-width: none; background: var(--navy);
+    }
+    .gallery::-webkit-scrollbar { display: none; }
+    .gallery:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+    .slide {
+      position: relative; flex: 0 0 100%; margin: 0; scroll-snap-align: center;
+      aspect-ratio: 21 / 9; min-height: 220px; max-height: 420px;
+      background: var(--navy-2); overflow: hidden;
+    }
+    .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .slide figcaption {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 18px 14px;
+      color: #fff; font-size: 13.5px; line-height: 1.45;
+      background: linear-gradient(180deg, rgba(13,27,62,0) 0%, rgba(13,27,62,0.82) 62%);
+    }
+    .slide .index {
+      position: absolute; top: 12px; right: 14px; padding: 4px 9px; border-radius: 999px;
+      background: rgba(13,27,62,0.66); border: 1px solid rgba(234,210,130,0.4);
+      color: var(--gold-2); font-size: 11px; font-weight: 700;
+      font-family: "JetBrains Mono", monospace;
+    }
+    .gallery-dots {
+      display: flex; justify-content: center; gap: 7px; padding: 12px;
+      background: #fbfcfd; border-top: 1px solid var(--line);
+    }
+    .gallery-dots button {
+      width: 9px; height: 9px; padding: 0; border-radius: 50%; border: 0;
+      background: rgba(13,27,62,0.22); transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .gallery-dots button[aria-current="true"] { background: var(--gold); transform: scale(1.45); }
+    @media (prefers-reduced-motion: reduce) { .gallery { scroll-behavior: auto; } }
+    @media (max-width: 720px) { .slide { aspect-ratio: 4 / 3; max-height: 300px; } }
+    @media print { .gallery-band { display: none !important; } }
 
     .notice {
       border: 1px solid var(--gold); border-left-width: 5px; border-radius: 8px;
@@ -626,7 +675,7 @@
         </div>
         <div>
           <div class="brand-name" id="brandName">Old Senate Hall</div>
-          <div class="brand-sub" id="brandSub">KLE-CTIE, Hubballi</div>
+          <div class="brand-sub" id="brandSub">KLE-C-SHInE, Hubballi</div>
         </div>
       </div>
       <nav class="nav" id="nav">
@@ -651,7 +700,7 @@
   <section class="hero">
     <div class="hero-inner">
       <div>
-        <div class="eyebrow" id="eyebrow">KLE-CTIE, Hubballi · EE Lab</div>
+        <div class="eyebrow" id="eyebrow">KLE-C-SHInE, Hubballi · EE Lab</div>
         <h1>Old Senate <em>Conference Hall</em></h1>
         <div class="hero-copy" id="heroCopy">
           Reserve the hall in three steps — verify your institute email, pick a free slot, and receive a
@@ -671,6 +720,23 @@
   <main>
     <div class="notice hidden" id="setupNotice"></div>
     <div class="notice hidden" id="adminNotice"></div>
+
+    <!-- Venue carousel. Stays hidden until GALLERY is filled in the Config sheet,
+         so the page never shows an empty frame or a broken image. -->
+    <section class="gallery-band hidden" id="galleryBand" aria-roledescription="carousel" aria-label="Photographs of the hall">
+      <div class="gallery-head">
+        <div>
+          <div class="panel-title" id="galleryTitle">Inside the hall</div>
+          <div class="panel-sub" id="gallerySub"></div>
+        </div>
+        <div class="gallery-nav">
+          <button class="ghost" id="galPrev" type="button" aria-label="Previous photograph">&#8592;</button>
+          <button class="ghost" id="galNext" type="button" aria-label="Next photograph">&#8594;</button>
+        </div>
+      </div>
+      <div class="gallery" id="galleryTrack" tabindex="0" aria-live="polite"></div>
+      <div class="gallery-dots" id="galleryDots" role="tablist" aria-label="Choose a photograph"></div>
+    </section>
 
     <div class="kpis" id="publicKpis"></div>
 
@@ -906,7 +972,7 @@
     <span class="heart">&#10084;</span>
     <span>~rhc</span>
     <span class="sep">·</span>
-    <span>EE Lab, KLE-CTIE</span>
+    <span>EE Lab, KLE-C-SHInE</span>
     <span class="sep">·</span>
     <span>Last updated <span id="footerUpdated">--</span></span>
   </footer>
@@ -1101,7 +1167,7 @@
       $("#brandSub").textContent = c.campus;
       $("#eyebrow").textContent = c.campus + " · EE Lab";
       $("#footerUpdated").textContent = c.lastUpdated || "--";
-      document.title = c.hallName + " Booking · KLE-CTIE";
+      document.title = c.hallName + " Booking · KLE-C-SHInE";
       applyLogo(c.logoUrl);
       applyHeroArt(c.heroImageUrl);
 
@@ -1120,6 +1186,7 @@
       }
 
       renderLive();
+      renderGallery();
       renderPublicKpis();
       renderFormOptions();
       renderRules();
@@ -1248,6 +1315,104 @@
         kpiCard("Next free slot", k.nextFree ? k.nextFree.start : "--",
           k.nextFree ? k.nextFree.datePretty : "nothing open in 3 weeks", "var(--gold)")
       ].join("");
+    }
+
+    /* ============================== carousel ============================== */
+    /*
+     * Driven entirely by the GALLERY key in the Config sheet, so photographs are
+     * added without touching this file. Native scroll-snap does the sliding, which
+     * means touch swipe and trackpad gestures work for free; JS only drives the
+     * arrows, dots and autoplay. A URL that fails to load removes its own slide,
+     * and the whole band hides if nothing survives.
+     */
+    const gallery = { items: [], index: 0, timer: null, paused: false };
+
+    function renderGallery() {
+      const band = $("#galleryBand");
+      if (!band) return;
+      gallery.items = (state.config && state.config.gallery) || [];
+      stopGallery();
+      if (!gallery.items.length) { band.classList.add("hidden"); return; }
+      band.classList.remove("hidden");
+
+      $("#galleryTrack").innerHTML = gallery.items.map((g, i) =>
+        '<figure class="slide" data-slide="' + i + '" role="group" aria-label="' +
+          (i + 1) + " of " + gallery.items.length + '">' +
+          '<img src="' + esc(g.url) + '" alt="' + esc(g.caption || ("The hall, view " + (i + 1))) + '" ' +
+            (i ? 'loading="lazy" ' : "") + 'referrerpolicy="no-referrer" />' +
+          '<span class="index">' + (i + 1) + " / " + gallery.items.length + "</span>" +
+          (g.caption ? "<figcaption>" + esc(g.caption) + "</figcaption>" : "") +
+        "</figure>").join("");
+
+      /* a dead URL should not leave a blank panel behind */
+      $$("#galleryTrack img").forEach((img) => {
+        img.addEventListener("error", () => {
+          const fig = img.closest(".slide");
+          if (fig) fig.remove();
+          const left = $$("#galleryTrack .slide").length;
+          if (!left) band.classList.add("hidden");
+          else { renumberSlides(); buildDots(); }
+        }, { once: true });
+      });
+
+      buildDots();
+      updateGalleryMeta();
+      startGallery();
+    }
+
+    function renumberSlides() {
+      $$("#galleryTrack .slide").forEach((fig, i) => {
+        fig.dataset.slide = i;
+        const badge = fig.querySelector(".index");
+        if (badge) badge.textContent = (i + 1) + " / " + $$("#galleryTrack .slide").length;
+      });
+    }
+
+    function buildDots() {
+      const n = $$("#galleryTrack .slide").length;
+      $("#galleryDots").innerHTML = n > 1
+        ? Array.from({ length: n }, (unused, i) =>
+            '<button type="button" role="tab" data-dot="' + i + '" aria-label="Photograph ' + (i + 1) +
+            '" aria-current="' + (i === gallery.index ? "true" : "false") + '"></button>').join("")
+        : "";
+      $("#galleryDots").style.display = n > 1 ? "flex" : "none";
+      $(".gallery-nav").style.display = n > 1 ? "flex" : "none";
+    }
+
+    function updateGalleryMeta() {
+      const n = $$("#galleryTrack .slide").length;
+      $("#gallerySub").textContent = n
+        ? (gallery.items[gallery.index] && gallery.items[gallery.index].caption
+            ? gallery.items[gallery.index].caption
+            : "Photograph " + (gallery.index + 1) + " of " + n)
+        : "";
+      $$("#galleryDots button").forEach((d) =>
+        d.setAttribute("aria-current", Number(d.dataset.dot) === gallery.index ? "true" : "false"));
+    }
+
+    function goSlide(i, smooth) {
+      const slides = $$("#galleryTrack .slide");
+      if (!slides.length) return;
+      gallery.index = (i + slides.length) % slides.length;
+      const track = $("#galleryTrack");
+      track.scrollTo({ left: slides[gallery.index].offsetLeft - track.offsetLeft,
+        behavior: smooth === false ? "auto" : "smooth" });
+      updateGalleryMeta();
+    }
+
+    function startGallery() {
+      const many = $$("#galleryTrack .slide").length > 1;
+      const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!many || still) return;                     /* never autoplay for reduced motion */
+      stopGallery();
+      gallery.timer = setInterval(() => {
+        if (gallery.paused || document.hidden) return;
+        goSlide(gallery.index + 1);
+      }, 6000);
+    }
+
+    function stopGallery() {
+      if (gallery.timer) { clearInterval(gallery.timer); gallery.timer = null; }
     }
 
     /* ============================ booking form ============================ */
@@ -1926,7 +2091,7 @@
           '<div class="report-logos">' +
             (state.logoUrl ? '<div class="report-logo" style="background:#fff;padding:6px 10px">' +
               '<img src="' + esc(state.logoUrl) + '" alt="KLE" style="height:32px;display:block" /></div>' : "") +
-            '<div class="report-logo">KLE-CTIE</div><div class="report-logo">EE LAB</div>' +
+            '<div class="report-logo">KLE-C-SHInE</div><div class="report-logo">EE LAB</div>' +
             '<div class="report-logo">HUBBALLI</div></div>' +
           '<div><div class="report-cover-title">' + esc(c.hallName) + ' <em>utilisation report</em></div>' +
           '<div class="report-cover-sub">' + esc(k.monthLabel) + " · generated from the live booking register on " +
@@ -1970,7 +2135,7 @@
         '<div class="report-section"><div class="report-section-title">Closed dates ahead</div>' +
           table(["Date", "Occasion", "Type"], (d.holidays || []).filter((h) => h.date >= today).slice(0, 20)
             .map((h) => [h.datePretty, h.name, h.type])) +
-          '<div class="report-note">Made with &#10084; ~rhc · EE Lab, KLE-CTIE · ' + esc(c.hallName) + " booking portal.</div></div>";
+          '<div class="report-note">Made with &#10084; ~rhc · EE Lab, KLE-C-SHInE · ' + esc(c.hallName) + " booking portal.</div></div>";
     }
 
     function shiftHour(hhmm) {
@@ -2130,6 +2295,37 @@
     on("#setKey", "change", syncSettingField);
     on("#setSave", "click", saveSetting);
 
+    /* carousel: arrows, dots, swipe tracking, and autoplay that yields to the reader */
+    on("#galPrev", "click", () => { goSlide(gallery.index - 1); startGallery(); });
+    on("#galNext", "click", () => { goSlide(gallery.index + 1); startGallery(); });
+    on("#galleryDots", "click", (e) => {
+      const dot = e.target.closest("[data-dot]");
+      if (dot) { goSlide(Number(dot.dataset.dot)); startGallery(); }
+    });
+    on("#galleryTrack", "keydown", (e) => {
+      if (e.key === "ArrowRight") { e.preventDefault(); goSlide(gallery.index + 1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); goSlide(gallery.index - 1); }
+    });
+    ["pointerenter", "focusin"].forEach((evt) => on("#galleryBand", evt, () => { gallery.paused = true; }));
+    ["pointerleave", "focusout"].forEach((evt) => on("#galleryBand", evt, () => { gallery.paused = false; }));
+    on("#galleryTrack", "scroll", () => {
+      /* keep the dots honest when the reader swipes or drags instead of clicking */
+      clearTimeout(gallery.scrollSettle);
+      gallery.scrollSettle = setTimeout(() => {
+        const slides = $$("#galleryTrack .slide");
+        if (!slides.length) return;
+        const track = $("#galleryTrack");
+        const mid = track.scrollLeft + track.clientWidth / 2;
+        let nearest = 0, best = Infinity;
+        slides.forEach((s, i) => {
+          const centre = s.offsetLeft - track.offsetLeft + s.clientWidth / 2;
+          if (Math.abs(centre - mid) < best) { best = Math.abs(centre - mid); nearest = i; }
+        });
+        if (nearest !== gallery.index) { gallery.index = nearest; updateGalleryMeta(); }
+      }, 90);
+    });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) startGallery(); });
+
     /* The console entry point appears only for a URL that asks for it, and keeps
        working if the operator opens …#console after the page has loaded. */
     if (consoleRequested()) enableConsoleEntry();
@@ -2145,8 +2341,8 @@
         return p[2] + "-" + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+p[1] - 1] + "-" + p[0];
       };
       const config = {
-        hallName: "Old Senate Hall", campus: "KLE-CTIE, Hubballi", notice: "",
-        departments: ["CTIE","CSE","ECE","EEE","Mechanical","Civil","MBA","Administration","Others"],
+        hallName: "Old Senate Hall", campus: "KLE-C-SHInE, Hubballi", notice: "",
+        departments: ["C-SHInE","CSE","ECE","EEE","Mechanical","Civil","MBA","Administration","Others"],
         supportOptions: ["Hall Only","Projector & Screen","Audio / Mic System","Seating Rearrangement","Other"],
         openWeekday: "10:00", closeWeekday: "18:00", openSaturday: "10:00", closeSaturday: "14:00",
         closedWeekdays: ["Sun"], buffer: 45, minDuration: 30, maxDuration: 240, slotStep: 15,
